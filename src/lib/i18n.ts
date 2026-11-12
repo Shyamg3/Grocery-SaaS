@@ -87,6 +87,11 @@ export type StringKey =
   | 'import.err.price'
   | 'import.err.stock'
   | 'import.err.duplicate'
+  | 'sync.online'
+  | 'sync.offline'
+  | 'sync.waiting'
+  | 'sync.error'
+  | 'sync.retryNow'
 
 const strings: Record<StringKey, Record<Lang, string>> = {
   'nav.billing': { ta: 'பில்', en: 'Billing' },
@@ -170,6 +175,11 @@ const strings: Record<StringKey, Record<Lang, string>> = {
   'import.err.price': { ta: 'தவறான விலை', en: 'Bad price' },
   'import.err.stock': { ta: 'தவறான சரக்கு', en: 'Bad stock' },
   'import.err.duplicate': { ta: 'ஏற்கனவே உள்ளது', en: 'Already exists' },
+  'sync.online': { ta: 'ஆன்லைன்', en: 'Online' },
+  'sync.offline': { ta: 'இணைப்பு இல்லை', en: 'Offline' },
+  'sync.waiting': { ta: '{n} பில்கள் ஒத்திசைக்க காத்திருக்கின்றன', en: '{n} bills waiting to sync' },
+  'sync.error': { ta: 'ஒத்திசைவில் பிழை', en: 'Sync error' },
+  'sync.retryNow': { ta: 'மீண்டும் ஒத்திசை', en: 'Retry sync' },
 }
 
 const LANG_STORAGE_KEY = 'app.lang'

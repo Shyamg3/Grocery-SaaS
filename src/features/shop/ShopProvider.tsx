@@ -18,6 +18,17 @@ interface ShopContextValue {
 
 const ShopContext = createContext<ShopContextValue | null>(null)
 
+const SHOP_CACHE_KEY = 'app.shop'
+
+function readCachedShop(): Shop | null {
+  try {
+    const raw = localStorage.getItem(SHOP_CACHE_KEY)
+    return raw ? (JSON.parse(raw) as Shop) : null
+  } catch {
+    return null
+  }
+}
+
 export function ShopProvider({ children }: { children: ReactNode }) {
   const { session } = useAuth()
   const userId = session?.user.id
@@ -47,7 +58,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       const members = (memberData ?? []) as { shop_id: string }[]
       if (cancelled) return
       if (memberError) {
-        setLoadError(true)
+        setShop(readCachedShop())
+        setLoadError(readCachedShop() === null)
         finish()
         return
       }
@@ -64,12 +76,18 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         .single()
       if (cancelled) return
       if (shopError || !shopData) {
-        setLoadError(true)
-        setShop(null)
+        const cached = readCachedShop()
+        setShop(cached)
+        setLoadError(cached === null)
         finish()
         return
       }
       setShop(shopData as Shop)
+      try {
+        localStorage.setItem(SHOP_CACHE_KEY, JSON.stringify(shopData))
+      } catch {
+        // cache write is best-effort; the online path still works without it
+      }
       finish()
     }
 
