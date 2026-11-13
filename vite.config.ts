@@ -10,6 +10,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        // fonts must be precached so Tamil + English work with no internet
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff,woff2}'],
+      },
       manifest: {
         name: 'Shop App',
         short_name: 'Shop App',
