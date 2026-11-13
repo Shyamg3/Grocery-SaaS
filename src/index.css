@@ -1,1 +1,46 @@
 @import "tailwindcss";
+
+@theme {
+  /* brand */
+  --color-brand: #17714a;
+  --color-brand-dark: #115c3b;
+  --color-brand-soft: #dcefe3;
+  --color-brand-tint: #eef7f1;
+
+  /* backgrounds */
+  --color-page: #f6f7f3;
+  --color-cream: #fbf9f2;
+  --color-surface: #ffffff;
+  --color-line: #e7ebe5;
+
+  /* feedback */
+  --color-warning: #8a5a12;
+  --color-warning-soft: #fdf2de;
+  --color-danger: #c0392b;
+  --color-danger-soft: #fdecea;
+
+  /* text */
+  --color-ink: #1b2a22;
+  --color-ink-muted: #5c6b63;
+
+  /* shape */
+  --radius-card: 24px;
+  --radius-control: 16px;
+
+  --shadow-card: 0 4px 16px rgb(23 60 40 / 0.06);
+  --shadow-raised: 0 10px 30px rgb(23 60 40 / 0.14);
+
+  /* type */
+  --font-sans: "Inter Variable", "Noto Sans Tamil", ui-sans-serif, system-ui, sans-serif;
+  --font-tamil: "Noto Sans Tamil", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-page font-sans text-base leading-normal text-ink antialiased;
+  }
+}

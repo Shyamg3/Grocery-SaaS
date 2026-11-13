@@ -7,6 +7,7 @@ import { saveProduct, softDeleteProduct, UNITS, type Product, type ProductInput,
 interface Props {
   shopId: string
   product: Product | null
+  initialBarcode?: string | null
   onSaved: () => void
   onCancel: () => void
 }
@@ -17,9 +18,9 @@ function parseQty(input: string): number | null {
   return Number.isFinite(n) && n >= 0 ? n : null
 }
 
-export default function ProductForm({ shopId, product, onSaved, onCancel }: Props) {
+export default function ProductForm({ shopId, product, initialBarcode, onSaved, onCancel }: Props) {
   const editing = product !== null
-  const [quick, setQuick] = useState(!editing)
+  const [quick, setQuick] = useState(!editing && !initialBarcode)
   const [name, setName] = useState(product?.name ?? '')
   const [nameTa, setNameTa] = useState(product?.name_ta ?? '')
   const [aliases, setAliases] = useState(product?.aliases.join(', ') ?? '')
@@ -30,6 +31,8 @@ export default function ProductForm({ shopId, product, onSaved, onCancel }: Prop
   )
   const [stockQty, setStockQty] = useState(product ? String(product.stock_qty) : '')
   const [reorder, setReorder] = useState(product ? String(product.reorder_level) : '')
+  const [coverDays, setCoverDays] = useState(product ? String(product.cover_days) : '7')
+  const [barcode, setBarcode] = useState(product?.barcode ?? initialBarcode ?? '')
   const [errorKey, setErrorKey] = useState<StringKey | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -60,6 +63,10 @@ export default function ProductForm({ shopId, product, onSaved, onCancel }: Prop
       setErrorKey('products.err.qty')
       return
     }
+    if (!/^\d{1,3}$/.test(coverDays.trim())) {
+      setErrorKey('products.err.cover')
+      return
+    }
     const input: ProductInput = {
       name: trimmedName,
       name_ta: nameTa.trim() === '' ? null : nameTa.trim(),
@@ -72,10 +79,12 @@ export default function ProductForm({ shopId, product, onSaved, onCancel }: Prop
       costPricePaise: costPaise,
       stockQty: stock,
       reorderLevel: reorderQty,
+      coverDays: Number(coverDays.trim()),
+      barcode: barcode.trim() === '' ? null : barcode.trim(),
     }
     setBusy(true)
     try {
-      await saveProduct(shopId, input, product?.id)
+      await saveProduct(shopId, input, product?.id, product?.cover_days)
       onSaved()
     } catch (err) {
       setErrorKey(mapAuthError(err instanceof Error ? err.message : String(err)))
@@ -223,6 +232,27 @@ export default function ProductForm({ shopId, product, onSaved, onCancel }: Prop
               value={reorder}
               onChange={(e) => setReorder(e.target.value)}
               placeholder="0"
+              className="min-h-[48px] rounded-xl border border-neutral-300 px-4 text-base"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-neutral-700">
+            {t('products.coverDays')}
+            <input
+              type="text"
+              inputMode="numeric"
+              value={coverDays}
+              onChange={(e) => setCoverDays(e.target.value)}
+              placeholder="7"
+              className="min-h-[48px] rounded-xl border border-neutral-300 px-4 text-base"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-neutral-700">
+            {t('products.barcode')}
+            <input
+              type="text"
+              inputMode="numeric"
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
               className="min-h-[48px] rounded-xl border border-neutral-300 px-4 text-base"
             />
           </label>

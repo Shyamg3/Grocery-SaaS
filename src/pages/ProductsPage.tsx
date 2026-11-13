@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import CsvImport from '../components/CsvImport'
 import ProductForm from '../components/ProductForm'
 import { useShop } from '../features/shop/ShopProvider'
@@ -15,7 +16,9 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [search, setSearch] = useState('')
-  const [view, setView] = useState<View>('list')
+  const [params] = useSearchParams()
+  const [view, setView] = useState<View>(() => (params.get('barcode') ? 'add' : 'list'))
+  const [prefillBarcode, setPrefillBarcode] = useState<string | null>(() => params.get('barcode'))
   const [editing, setEditing] = useState<Product | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
@@ -62,6 +65,7 @@ export default function ProductsPage() {
     refresh()
     setView('list')
     setEditing(null)
+    setPrefillBarcode(null)
   }
 
   if (!shopId) return null
@@ -72,6 +76,7 @@ export default function ProductsPage() {
         key={editing?.id ?? 'new'}
         shopId={shopId}
         product={view === 'edit' ? editing : null}
+        initialBarcode={view === 'add' ? prefillBarcode : null}
         onSaved={handleSaved}
         onCancel={() => {
           setView('list')
@@ -109,6 +114,7 @@ export default function ProductsPage() {
           type="button"
           onClick={() => {
             setEditing(null)
+            setPrefillBarcode(null)
             setView('add')
             setNotice(null)
           }}

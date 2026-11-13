@@ -1,5 +1,8 @@
 export type Lang = 'ta' | 'en'
 
+// 'both' = Tamil primary with English underneath
+export type LangMode = Lang | 'both'
+
 export const LANG_NAMES: Record<Lang, string> = {
   ta: 'தமிழ்',
   en: 'English',
@@ -9,6 +12,64 @@ export type StringKey =
   | 'nav.billing'
   | 'nav.products'
   | 'nav.stock'
+  | 'stock.tabAdd'
+  | 'stock.tabCorrect'
+  | 'stock.tabAll'
+  | 'stock.tabLow'
+  | 'stock.daysLeft'
+  | 'stock.noSales'
+  | 'stock.avgPerDay'
+  | 'stock.buy'
+  | 'stock.makeList'
+  | 'stock.listTitle'
+  | 'stock.shareWhatsapp'
+  | 'stock.copy'
+  | 'stock.copied'
+  | 'stock.scan'
+  | 'stock.scanTitle'
+  | 'stock.scanHint'
+  | 'stock.scanDenied'
+  | 'stock.scanUnsupported'
+  | 'stock.scanFailed'
+  | 'stock.addBySearch'
+  | 'stock.addByVoice'
+  | 'stock.voiceTitle'
+  | 'stock.voiceHint'
+  | 'stock.voiceHeard'
+  | 'stock.voiceNoMatch'
+  | 'stock.voiceUnsupported'
+  | 'stock.voiceDenied'
+  | 'stock.voiceFailed'
+  | 'stock.unknownBarcode'
+  | 'stock.addThisProduct'
+  | 'stock.productsEntry'
+  | 'stock.noProductsTitle'
+  | 'stock.noProductsBody'
+  | 'stock.addProduct'
+  | 'stock.search'
+  | 'stock.lowTitle'
+  | 'stock.lowNone'
+  | 'stock.lowTag'
+  | 'stock.linesTitle'
+  | 'stock.note'
+  | 'stock.reason'
+  | 'stock.notePlaceholder'
+  | 'stock.costOptional'
+  | 'stock.editQty'
+  | 'stock.removeLine'
+  | 'stock.save'
+  | 'stock.saved'
+  | 'stock.saveError'
+  | 'stock.needsUpdate'
+  | 'stock.offline'
+  | 'stock.current'
+  | 'stock.newQty'
+  | 'stock.tapToSet'
+  | 'stock.correctTitle'
+  | 'stock.correctHint'
+  | 'stock.noteRequired'
+  | 'stock.correctDone'
+  | 'stock.saveCorrect'
   | 'nav.reports'
   | 'common.comingSoon'
   | 'common.loading'
@@ -62,11 +123,14 @@ export type StringKey =
   | 'products.costPrice'
   | 'products.stockQty'
   | 'products.reorderLevel'
+  | 'products.coverDays'
+  | 'products.barcode'
   | 'products.save'
   | 'products.delete'
   | 'products.deleteConfirm'
   | 'products.err.price'
   | 'products.err.qty'
+  | 'products.err.cover'
   | 'unit.kg'
   | 'unit.g'
   | 'unit.l'
@@ -92,12 +156,250 @@ export type StringKey =
   | 'sync.waiting'
   | 'sync.error'
   | 'sync.retryNow'
+  | 'nav.home'
+  | 'nav.bill'
+  | 'bills.title'
+  | 'bills.search'
+  | 'bills.emptyTitle'
+  | 'bills.emptyBody'
+  | 'bills.noResults'
+  | 'bills.count'
+  | 'bills.today'
+  | 'bills.yesterday'
+  | 'bills.pending'
+  | 'bills.voidTag'
+  | 'bills.itemCount'
+  | 'invoice.title'
+  | 'invoice.billNo'
+  | 'invoice.pending'
+  | 'invoice.pendingNote'
+  | 'invoice.date'
+  | 'invoice.subtotal'
+  | 'invoice.discount'
+  | 'invoice.total'
+  | 'invoice.payment'
+  | 'invoice.customer'
+  | 'invoice.share'
+  | 'invoice.print'
+  | 'invoice.newBill'
+  | 'invoice.void'
+  | 'invoice.voidConfirmTitle'
+  | 'invoice.voidConfirmBody'
+  | 'invoice.voidConfirm'
+  | 'invoice.voidDone'
+  | 'invoice.voidOffline'
+  | 'invoice.voidAfterSync'
+  | 'invoice.voidNeedsUpdate'
+  | 'invoice.voidError'
+  | 'invoice.voidedBanner'
+  | 'invoice.receiptWidth'
+  | 'invoice.notFound'
+  | 'invoice.backToBills'
+  | 'common.back'
+  | 'lang.ta'
+  | 'lang.en'
+  | 'lang.both'
+  | 'common.save'
+  | 'common.close'
+  | 'common.done'
+  | 'home.greeting'
+  | 'home.greetingName'
+  | 'home.greetingPlain'
+  | 'home.sub'
+  | 'home.voiceTitle'
+  | 'home.voiceHint'
+  | 'home.voiceStart'
+  | 'home.scanStock'
+  | 'home.scanStockHint'
+  | 'home.lowStock'
+  | 'home.lowStockHint'
+  | 'home.lowStockCount'
+  | 'home.lowStockNone'
+  | 'billing.heard'
+  | 'billing.heardEmpty'
+  | 'billing.heardSummary'
+  | 'billing.tapToAdd'
+  | 'billing.noCachedProducts'
+  | 'billing.emptyTitle'
+  | 'billing.emptyBody'
+  | 'billing.speakMore'
+  | 'billing.voiceSoon'
+  | 'billing.hearBack'
+  | 'billing.discount'
+  | 'billing.addDiscount'
+  | 'billing.payment'
+  | 'billing.creditNeedsCustomer'
+  | 'billing.chooseCustomer'
+  | 'billing.customerTitle'
+  | 'billing.customerSearch'
+  | 'billing.noCustomers'
+  | 'billing.newCustomer'
+  | 'billing.customerPhone'
+  | 'billing.customerAddOffline'
+  | 'billing.customerAdded'
+  | 'billing.customerSaveError'
+  | 'billing.tabNew'
+  | 'billing.tabHistory'
+  | 'billing.saveBill'
+  | 'billing.savedToast'
+  | 'billing.saveError'
+  | 'billing.removeLine'
+  | 'billing.total'
+  | 'billing.qty'
+  | 'billing.qtyInvalid'
+  | 'billing.discountInvalid'
+  | 'billing.backspace'
+  | 'payment.cash'
+  | 'payment.upi'
+  | 'payment.card'
+  | 'payment.credit'
+  | 'stat.todaySales'
+  | 'stat.billsMade'
+  | 'stat.stockCost'
+  | 'stat.grossProfit'
+  | 'stat.vsYesterday'
+  | 'period.today'
+  | 'period.week'
+  | 'period.month'
+  | 'demo.rice'
+  | 'demo.riceSub'
+  | 'demo.sugar'
+  | 'demo.sugarSub'
+  | 'demo.milk'
+  | 'demo.milkSub'
+  | 'design.title'
+  | 'design.subtitle'
+  | 'design.section.tokens'
+  | 'design.section.type'
+  | 'design.section.nav'
+  | 'design.section.actions'
+  | 'design.section.stats'
+  | 'design.section.rows'
+  | 'design.section.pills'
+  | 'design.section.feedback'
+  | 'design.section.confirm'
+  | 'design.section.compare'
+  | 'design.swatch.brand'
+  | 'design.swatch.brandDark'
+  | 'design.swatch.brandSoft'
+  | 'design.swatch.page'
+  | 'design.swatch.cream'
+  | 'design.swatch.warning'
+  | 'design.swatch.danger'
+  | 'design.swatch.ink'
+  | 'design.type.tamil'
+  | 'design.type.english'
+  | 'design.toastSaved'
+  | 'design.toastError'
+  | 'design.showToast'
+  | 'design.emptyTitle'
+  | 'design.emptyBody'
+  | 'design.emptyAction'
+  | 'design.offlineText'
+  | 'design.offlinePending'
+  | 'design.confirmHint'
+  | 'design.confirmSave'
+  | 'design.micLabel'
+  | 'design.micHint'
+  | 'design.compareTa'
+  | 'design.compareEn'
+  | 'design.tokensNote'
+  | 'design.type.sampleTitle'
+  | 'design.type.sampleBody'
+  | 'design.type.sampleMuted'
+  | 'design.type.englishBody'
+  | 'design.navNote'
 
 const strings: Record<StringKey, Record<Lang, string>> = {
   'nav.billing': { ta: 'பில்', en: 'Billing' },
   'nav.products': { ta: 'பொருட்கள்', en: 'Products' },
   'nav.stock': { ta: 'சரக்கு', en: 'Stock' },
   'nav.reports': { ta: 'அறிக்கை', en: 'Reports' },
+  'stock.tabAdd': { ta: 'சரக்கு சேர்', en: 'Add stock' },
+  'stock.tabCorrect': { ta: 'திருத்தம்', en: 'Correct' },
+  'stock.tabAll': { ta: 'அனைத்தும்', en: 'All stock' },
+  'stock.tabLow': { ta: 'குறைவு', en: 'Low stock' },
+  'stock.daysLeft': { ta: '{n} நாட்கள்', en: '{n} days' },
+  'stock.noSales': { ta: 'விற்பனை இல்லை', en: 'No sales yet' },
+  'stock.avgPerDay': { ta: '{n}/நாள்', en: '{n}/day' },
+  'stock.buy': { ta: 'வாங்க {qty} {unit}', en: 'Buy {qty} {unit}' },
+  'stock.makeList': { ta: 'ஷாப்பிங் லிஸ்ட் உருவாக்கு', en: 'Make shopping list' },
+  'stock.listTitle': { ta: 'சப்ளையர் பட்டியல்', en: 'Supplier list' },
+  'stock.shareWhatsapp': { ta: 'WhatsApp இல் அனுப்பு', en: 'Share on WhatsApp' },
+  'stock.copy': { ta: 'நகலெடு', en: 'Copy' },
+  'stock.copied': { ta: 'நகலெடுக்கப்பட்டது', en: 'Copied' },
+  'stock.scan': { ta: 'ஸ்கேன்', en: 'Scan' },
+  'stock.scanTitle': { ta: 'பார்கோடு ஸ்கேன்', en: 'Scan barcode' },
+  'stock.scanHint': {
+    ta: 'பேக் செய்யப்பட்ட பொருட்களை மட்டும் ஸ்கேன் செய்யவும்',
+    en: 'Scan packaged items only',
+  },
+  'stock.scanDenied': {
+    ta: 'கேமரா அனுமதி இல்லை — ஃபோன் அமைப்புகளில் அனுமதித்து மீண்டும் முயற்சிக்கவும்',
+    en: 'Camera permission denied — allow it in phone settings and try again',
+  },
+  'stock.scanUnsupported': {
+    ta: 'இந்த ஃபோனில் ஸ்கேன் ஆதரவு இல்லை — தேடி சேர்க்கவும்',
+    en: 'Scanning is not supported on this phone — add by search',
+  },
+  'stock.scanFailed': { ta: 'கேமராவைத் தொடங்க முடியவில்லை', en: 'Could not start the camera' },
+  'stock.addBySearch': { ta: 'தேடி சேர்', en: 'Add by search' },
+  'stock.addByVoice': { ta: 'குரலில் சேர்', en: 'Add by voice' },
+  'stock.voiceTitle': { ta: 'பொருள் பெயரைச் சொல்லுங்கள்', en: 'Say the item name' },
+  'stock.voiceHint': { ta: 'எ.கா. அரிசி அல்லது rice', en: 'e.g. arisi or rice' },
+  'stock.voiceHeard': { ta: 'கேட்டது', en: 'Heard' },
+  'stock.voiceNoMatch': {
+    ta: 'பொருள் கிடைக்கவில்லை — தேடி சேர்க்கவும்',
+    en: 'No matching item — try search',
+  },
+  'stock.voiceUnsupported': {
+    ta: 'இந்த உலாவியில் குரல் ஆதரவு இல்லை',
+    en: 'Voice is not supported in this browser',
+  },
+  'stock.voiceDenied': { ta: 'மைக் அனுமதி இல்லை', en: 'Microphone permission denied' },
+  'stock.voiceFailed': { ta: 'கேட்க முடியவில்லை — மீண்டும் முயற்சிக்கவும்', en: 'Could not listen — try again' },
+  'stock.unknownBarcode': { ta: 'இந்த பார்கோடு தெரியவில்லை', en: 'Unknown barcode' },
+  'stock.addThisProduct': { ta: 'இந்தப் பொருளைச் சேர்', en: 'Add this product' },
+  'stock.productsEntry': { ta: 'பொருட்கள்', en: 'Products' },
+  'stock.noProductsTitle': { ta: 'பொருட்கள் இல்லை', en: 'No products yet' },
+  'stock.noProductsBody': {
+    ta: 'சரக்கைக் கணக்கிட முதலில் பொருட்களைச் சேர்க்கவும்',
+    en: 'Add products first to track stock',
+  },
+  'stock.addProduct': { ta: 'பொருள் சேர்', en: 'Add product' },
+  'stock.search': { ta: 'பொருளைத் தேடு…', en: 'Search items…' },
+  'stock.lowTitle': { ta: 'குறைந்த சரக்கு', en: 'Running low' },
+  'stock.lowNone': { ta: 'குறைந்த சரக்கு இல்லை', en: 'No items running low' },
+  'stock.lowTag': { ta: 'குறைவு', en: 'LOW' },
+  'stock.linesTitle': { ta: 'சேர்க்க வேண்டியவை', en: 'Adding to stock' },
+  'stock.note': { ta: 'குறிப்பு (விரும்பினால்)', en: 'Note (optional)' },
+  'stock.reason': { ta: 'காரணம்', en: 'Reason' },
+  'stock.notePlaceholder': { ta: 'எ.கா. சப்ளையர் பெயர்', en: 'e.g. supplier name' },
+  'stock.costOptional': { ta: 'வாங்கிய விலை (விரும்பினால்)', en: 'Cost price (optional)' },
+  'stock.editQty': { ta: 'அளவை மாற்று', en: 'Change quantity' },
+  'stock.removeLine': { ta: 'நீக்கு', en: 'Remove' },
+  'stock.save': { ta: 'சரக்கைச் சேமி', en: 'Save stock' },
+  'stock.saved': { ta: '{n} பொருட்களின் சரக்கு சேர்க்கப்பட்டது', en: '{n} items restocked' },
+  'stock.saveError': { ta: 'சரக்கைச் சேமிக்க முடியவில்லை', en: 'Could not save stock' },
+  'stock.needsUpdate': {
+    ta: 'இந்த அம்சத்திற்கு தரவுத்தள புதுப்பிப்பு தேவை',
+    en: 'This feature needs the latest database update',
+  },
+  'stock.offline': {
+    ta: 'சரக்கு மாற்றத்திற்கு இணையம் தேவை — இணைப்பு வந்ததும் முயற்சிக்கவும்',
+    en: 'Stock changes need internet — try again when you are connected',
+  },
+  'stock.current': { ta: 'தற்போதைய சரக்கு', en: 'Current stock' },
+  'stock.newQty': { ta: 'புதிய சரக்கு அளவு', en: 'New stock qty' },
+  'stock.tapToSet': { ta: 'அளவை உள்ளிட தட்டவும்', en: 'Tap to enter the quantity' },
+  'stock.correctTitle': { ta: 'சரக்கைத் திருத்து', en: 'Correct stock' },
+  'stock.correctHint': {
+    ta: 'எண்ணிய அளவை உள்ளிட்டு காரணம் எழுதவும்',
+    en: 'Enter the counted quantity and a reason',
+  },
+  'stock.noteRequired': { ta: 'காரணம் அவசியம்', en: 'A reason is required' },
+  'stock.correctDone': { ta: 'சரக்கு திருத்தப்பட்டது', en: 'Stock corrected' },
+  'stock.saveCorrect': { ta: 'திருத்தத்தைச் சேமி', en: 'Save correction' },
   'common.comingSoon': { ta: 'விரைவில் வரும்…', en: 'Coming soon…' },
   'common.loading': { ta: 'ஏற்றுகிறது…', en: 'Loading…' },
   'common.retry': { ta: 'மீண்டும் முயற்சி', en: 'Try again' },
@@ -150,11 +452,17 @@ const strings: Record<StringKey, Record<Lang, string>> = {
   'products.costPrice': { ta: 'வாங்கிய விலை (₹)', en: 'Cost price (₹)' },
   'products.stockQty': { ta: 'சரக்கு அளவு', en: 'Stock qty' },
   'products.reorderLevel': { ta: 'மீண்டும் ஆர்டர் அளவு', en: 'Reorder level' },
+  'products.coverDays': { ta: 'சரக்கு நாட்கள்', en: 'Stock cover (days)' },
+  'products.barcode': { ta: 'பார்கோடு', en: 'Barcode' },
   'products.save': { ta: 'சேமி', en: 'Save' },
   'products.delete': { ta: 'நீக்கு', en: 'Delete' },
   'products.deleteConfirm': { ta: 'இந்த பொருளை நீக்கவா?', en: 'Delete this item?' },
   'products.err.price': { ta: 'விலையை சரியாக உள்ளிடவும் (எ.கா. 55.99)', en: 'Enter a valid price (e.g. 55.99)' },
   'products.err.qty': { ta: 'அளவை சரியாக உள்ளிடவும்', en: 'Enter a valid quantity' },
+  'products.err.cover': {
+    ta: 'சரக்கு நாட்களை சரியாக உள்ளிடவும் (எ.கா. 7)',
+    en: 'Enter a valid number of days (e.g. 7)',
+  },
   'unit.kg': { ta: 'கிலோ', en: 'kg' },
   'unit.g': { ta: 'கிராம்', en: 'g' },
   'unit.l': { ta: 'லிட்டர்', en: 'l' },
@@ -180,39 +488,239 @@ const strings: Record<StringKey, Record<Lang, string>> = {
   'sync.waiting': { ta: '{n} பில்கள் ஒத்திசைக்க காத்திருக்கின்றன', en: '{n} bills waiting to sync' },
   'sync.error': { ta: 'ஒத்திசைவில் பிழை', en: 'Sync error' },
   'sync.retryNow': { ta: 'மீண்டும் ஒத்திசை', en: 'Retry sync' },
+  'nav.home': { ta: 'முகப்பு', en: 'Home' },
+  'nav.bill': { ta: 'பில்', en: 'Bill' },
+  'bills.title': { ta: 'பில் வரலாறு', en: 'Bill history' },
+  'bills.search': { ta: 'பில் எண், பொருள் அல்லது தொகையைத் தேடு…', en: 'Search bill no., item or amount…' },
+  'bills.emptyTitle': { ta: 'இன்னும் பில் இல்லை', en: 'No bills yet' },
+  'bills.emptyBody': { ta: 'பில் சேமித்ததும் இங்கே தோன்றும்', en: 'Saved bills will appear here' },
+  'bills.noResults': { ta: 'பில் கிடைக்கவில்லை', en: 'No matching bills' },
+  'bills.count': { ta: '{n} பில்கள்', en: '{n} bills' },
+  'bills.today': { ta: 'இன்று', en: 'Today' },
+  'bills.yesterday': { ta: 'நேற்று', en: 'Yesterday' },
+  'bills.pending': { ta: 'ஒத்திசைவு நிலுவை', en: 'Pending sync' },
+  'bills.voidTag': { ta: 'ரத்து', en: 'VOID' },
+  'bills.itemCount': { ta: '{n} பொருட்கள்', en: '{n} items' },
+  'invoice.title': { ta: 'பில் விவரம்', en: 'Bill details' },
+  'invoice.billNo': { ta: 'பில் எண்', en: 'Bill no.' },
+  'invoice.pending': { ta: 'நிலுவை', en: 'Pending' },
+  'invoice.pendingNote': { ta: 'ஒத்திசைவுக்குப் பின் பில் எண் வழங்கப்படும்', en: 'Bill number is assigned after sync' },
+  'invoice.date': { ta: 'தேதி & நேரம்', en: 'Date & time' },
+  'invoice.subtotal': { ta: 'கூட்டுத்தொகை', en: 'Subtotal' },
+  'invoice.discount': { ta: 'தள்ளுபடி', en: 'Discount' },
+  'invoice.total': { ta: 'மொத்தம்', en: 'Total' },
+  'invoice.payment': { ta: 'பணம் செலுத்தும் முறை', en: 'Payment' },
+  'invoice.customer': { ta: 'வாடிக்கையாளர்', en: 'Customer' },
+  'invoice.share': { ta: 'WhatsApp இல் அனுப்பு', en: 'Share on WhatsApp' },
+  'invoice.print': { ta: 'அச்சிடு', en: 'Print' },
+  'invoice.newBill': { ta: 'புதிய பில்', en: 'New bill' },
+  'invoice.void': { ta: 'பில் ரத்து', en: 'Void bill' },
+  'invoice.voidConfirmTitle': { ta: 'இந்த பில்லை ரத்து செய்யவா?', en: 'Void this bill?' },
+  'invoice.voidConfirmBody': {
+    ta: 'பில் அழிக்கப்படாது — சரக்கு திரும்பவும், மொத்த விற்பனையிலிருந்து நீக்கப்படும்.',
+    en: "The bill is not deleted — stock is returned and it's removed from sales totals.",
+  },
+  'invoice.voidConfirm': { ta: 'ஆம், ரத்து செய்', en: 'Yes, void it' },
+  'invoice.voidDone': { ta: 'பில் ரத்து செய்யப்பட்டது', en: 'Bill voided' },
+  'invoice.voidOffline': { ta: 'ரத்து செய்ய இணையம் தேவை', en: 'Internet is needed to void a bill' },
+  'invoice.voidAfterSync': {
+    ta: 'ஒத்திசைவுக்குப் பின் ரத்து செய்யலாம்',
+    en: 'Can be voided after it syncs',
+  },
+  'invoice.voidNeedsUpdate': {
+    ta: 'இந்த அம்சத்திற்கு தரவுத்தள புதுப்பிப்பு தேவை',
+    en: 'This feature needs the latest database update',
+  },
+  'invoice.voidError': { ta: 'ரத்து செய்ய முடியவில்லை', en: 'Could not void the bill' },
+  'invoice.voidedBanner': {
+    ta: 'ரத்து செய்யப்பட்ட பில் — விற்பனைக் கணக்கில் சேராது',
+    en: 'Voided bill — not counted in sales',
+  },
+  'invoice.receiptWidth': { ta: 'ரசீது அகலம்', en: 'Receipt width' },
+  'invoice.notFound': { ta: 'பில் கிடைக்கவில்லை', en: 'Bill not found' },
+  'invoice.backToBills': { ta: 'பில் பட்டியலுக்கு', en: 'Back to bills' },
+  'common.back': { ta: 'திரும்பு', en: 'Back' },
+  'lang.ta': { ta: 'தமிழ்', en: 'Tamil' },
+  'lang.en': { ta: 'English', en: 'English' },
+  'lang.both': { ta: 'இரண்டும்', en: 'Both' },
+  'common.save': { ta: 'சேமி', en: 'Save' },
+  'common.close': { ta: 'மூடு', en: 'Close' },
+  'common.done': { ta: 'சரி', en: 'Done' },
+  'home.greeting': { ta: 'வணக்கம், முருகன்!', en: 'Welcome back, Murugan!' },
+  'home.greetingName': { ta: 'வணக்கம், {name}!', en: 'Welcome back, {name}!' },
+  'home.greetingPlain': { ta: 'வணக்கம்!', en: 'Welcome back!' },
+  'home.sub': { ta: 'உங்கள் கடை, எளிதாக', en: 'Your shop, made simple.' },
+  'home.voiceTitle': { ta: 'பேச்சில் பில் போடலாம்', en: 'Bill by voice' },
+  'home.voiceHint': { ta: 'மைக்கை தட்டவும். பொருள் + அளவு சொல்லவும்', en: 'Tap the mic. Say the item and quantity.' },
+  'home.voiceStart': { ta: 'குரல் பில் தொடங்கு', en: 'Start voice bill' },
+  'home.scanStock': { ta: 'ஸ்கேன் செய்து சரக்கு சேர்', en: 'Scan and add stock' },
+  'home.scanStockHint': { ta: 'பார்கோடு / QR ஸ்கேன்', en: 'Scan barcode / QR' },
+  'home.lowStock': { ta: '3 பொருட்கள் குறைவு', en: '3 items running low' },
+  'home.lowStockHint': { ta: 'அடுத்து வாங்க வேண்டியவற்றைப் பார்', en: 'Check what to buy next' },
+  'home.lowStockCount': { ta: '{n} பொருட்கள் குறைவாக உள்ளன', en: '{n} items running low' },
+  'home.lowStockNone': { ta: 'சரக்கு நிலை நல்லா உள்ளது', en: 'Stock levels look fine' },
+  'billing.heard': { ta: 'நான் கேட்டது', en: 'I heard' },
+  'billing.heardEmpty': { ta: 'இன்னும் ஒன்றும் இல்லை — கீழே தேடி அல்லது பேசி சேர்க்கவும்', en: 'Nothing yet — search below or speak to add' },
+  'billing.heardSummary': { ta: '{n} பொருட்கள் இந்த பில்லில்', en: '{n} items in this bill' },
+  'billing.tapToAdd': { ta: 'பொருளைத் தட்டி சேர்', en: 'Tap an item to add' },
+  'billing.noCachedProducts': { ta: 'பொருட்கள் இன்னும் சேமிக்கப்படவில்லை. இணையத்தில் Products பக்கத்தை ஒருமுறை திறக்கவும்.', en: 'Items are not cached yet. Open Products once while online.' },
+  'billing.emptyTitle': { ta: 'புதிய பில்', en: 'New bill' },
+  'billing.emptyBody': { ta: 'பொருளைத் தேடி அல்லது மைக்கில் பேசி சேர்க்கவும்', en: 'Search an item or use the mic to add' },
+  'billing.speakMore': { ta: 'மேலும் சேர்க்க பேசுங்கள்', en: 'Speak to add more' },
+  'billing.voiceSoon': { ta: 'குரல் பில் அடுத்த படியில் இணைக்கப்படும்', en: 'Voice billing arrives in the next step' },
+  'billing.hearBack': { ta: 'மீண்டும் கேட்க', en: 'Hear it back' },
+  'billing.discount': { ta: 'தள்ளுபடி', en: 'Discount' },
+  'billing.addDiscount': { ta: 'தள்ளுபடி சேர்', en: 'Add discount' },
+  'billing.payment': { ta: 'பணம் செலுத்தும் முறை', en: 'Payment' },
+  'billing.creditNeedsCustomer': { ta: 'கடன் பில்லுக்கு வாடிக்கையாளர் தேர்ந்தெடுக்கவும்', en: 'Credit needs a customer' },
+  'billing.chooseCustomer': { ta: 'வாடிக்கையாளரைத் தேர்ந்தெடு', en: 'Choose customer' },
+  'billing.customerTitle': { ta: 'வாடிக்கையாளர்', en: 'Customer' },
+  'billing.customerSearch': { ta: 'வாடிக்கையாளரைத் தேடு…', en: 'Search customers…' },
+  'billing.noCustomers': { ta: 'வாடிக்கையாளர் இல்லை', en: 'No customers yet' },
+  'billing.newCustomer': { ta: 'புதிய வாடிக்கையாளர்', en: 'New customer' },
+  'billing.customerPhone': { ta: 'தொலைபேசி எண்', en: 'Phone number' },
+  'billing.customerAddOffline': { ta: 'இணையம் இல்லை — இப்போது புதிய வாடிக்கையாளரை சேர்க்க முடியாது', en: "No internet — a new customer can't be added right now" },
+  'billing.customerAdded': { ta: 'வாடிக்கையாளர் சேர்க்கப்பட்டார்', en: 'Customer added' },
+  'billing.customerSaveError': { ta: 'வாடிக்கையாளரை சேமிக்க முடியவில்லை', en: 'Could not save customer' },
+  'billing.tabNew': { ta: 'புதிய பில்', en: 'New bill' },
+  'billing.tabHistory': { ta: 'வரலாறு', en: 'History' },
+  'billing.saveBill': { ta: 'பில் சேமி', en: 'Save bill' },
+  'billing.savedToast': { ta: 'பில் #{n} சேமிக்கப்பட்டது', en: 'Bill #{n} saved' },
+  'billing.saveError': { ta: 'பில் சேமிக்க முடியவில்லை', en: 'Could not save bill' },
+  'billing.removeLine': { ta: 'வரியை நீக்கு', en: 'Remove line' },
+  'billing.total': { ta: 'மொத்தம்', en: 'Total' },
+  'billing.qty': { ta: 'அளவு', en: 'Quantity' },
+  'billing.qtyInvalid': { ta: 'சரியான அளவை உள்ளிடவும்', en: 'Enter a valid quantity' },
+  'billing.discountInvalid': { ta: 'சரியான தள்ளுபடியை உள்ளிடவும்', en: 'Enter a valid discount' },
+  'billing.backspace': { ta: 'நீக்கு', en: 'Backspace' },
+  'payment.cash': { ta: 'பணம்', en: 'Cash' },
+  'payment.upi': { ta: 'UPI', en: 'UPI' },
+  'payment.card': { ta: 'கார்டு', en: 'Card' },
+  'payment.credit': { ta: 'கடன்', en: 'Credit' },
+  'stat.todaySales': { ta: 'இன்றைய விற்பனை', en: "Today's sales" },
+  'stat.billsMade': { ta: 'பில்கள்', en: 'Bills made' },
+  'stat.stockCost': { ta: 'சரக்கு விலை', en: 'Stock cost' },
+  'stat.grossProfit': { ta: 'மொத்த லாபம்', en: 'Gross profit' },
+  'stat.vsYesterday': { ta: 'நேற்றை விட ↑12%', en: '↑12% vs yesterday' },
+  'period.today': { ta: 'இன்று', en: 'Today' },
+  'period.week': { ta: 'இந்த வாரம்', en: 'This week' },
+  'period.month': { ta: 'இந்த மாதம்', en: 'This month' },
+  'demo.rice': { ta: 'அரிசி', en: 'Rice' },
+  'demo.riceSub': { ta: '2 கிலோ × ₹60', en: '2 kg × ₹60' },
+  'demo.sugar': { ta: 'சர்க்கரை', en: 'Sugar' },
+  'demo.sugarSub': { ta: '1 கிலோ × ₹45', en: '1 kg × ₹45' },
+  'demo.milk': { ta: 'பால்', en: 'Milk' },
+  'demo.milkSub': { ta: '2 பாக்கெட் × ₹30', en: '2 packs × ₹30' },
+  'design.title': { ta: 'வடிவமைப்பு அமைப்பு', en: 'Design system' },
+  'design.subtitle': { ta: 'கூறுகள் — தமிழ், English', en: 'Components in Tamil and English' },
+  'design.section.tokens': { ta: 'நிறங்கள்', en: 'Colors' },
+  'design.section.type': { ta: 'எழுத்துரு', en: 'Typography' },
+  'design.section.nav': { ta: 'கீழ் பட்டி', en: 'Bottom nav' },
+  'design.section.actions': { ta: 'செயல் அழைப்புகள்', en: 'Action cards' },
+  'design.section.stats': { ta: 'புள்ளிவிவரங்கள்', en: 'Stats' },
+  'design.section.rows': { ta: 'பட்டியல் வரிகள்', en: 'List rows' },
+  'design.section.pills': { ta: 'வடிகட்டி தாவல்கள்', en: 'Pill tabs' },
+  'design.section.feedback': { ta: 'நிலைச் செய்திகள்', en: 'Feedback' },
+  'design.section.confirm': { ta: 'உறுதிப்படுத்தல் பட்டி', en: 'Confirm bar' },
+  'design.section.compare': { ta: 'மொழி ஒப்பீடு', en: 'Language compare' },
+  'design.swatch.brand': { ta: 'முதன்மை பச்சை', en: 'Primary' },
+  'design.swatch.brandDark': { ta: 'அடர் பச்சை', en: 'Dark green' },
+  'design.swatch.brandSoft': { ta: 'வெளிர் பச்சை', en: 'Soft green' },
+  'design.swatch.page': { ta: 'பின்னணி', en: 'Page bg' },
+  'design.swatch.cream': { ta: 'கிரீம்', en: 'Cream' },
+  'design.swatch.warning': { ta: 'எச்சரிக்கை', en: 'Warning' },
+  'design.swatch.danger': { ta: 'பிழை', en: 'Error' },
+  'design.swatch.ink': { ta: 'எழுத்து', en: 'Text' },
+  'design.type.tamil': { ta: 'தமிழ் எழுத்துரு — Noto Sans Tamil', en: 'Tamil type — Noto Sans Tamil' },
+  'design.type.english': { ta: 'ஆங்கில எழுத்துரு — Inter', en: 'English type — Inter' },
+  'design.toastSaved': { ta: 'பில் சேமிக்கப்பட்டது', en: 'Bill saved' },
+  'design.toastError': { ta: 'சேமிக்க முடியவில்லை', en: 'Could not save' },
+  'design.showToast': { ta: 'செய்தியைக் காட்டு', en: 'Show toast' },
+  'design.emptyTitle': { ta: 'இன்னும் பொருட்கள் இல்லை', en: 'No items yet' },
+  'design.emptyBody': { ta: 'முதல் பொருளைச் சேர்த்து தொடங்குங்கள்', en: 'Add your first item to start' },
+  'design.emptyAction': { ta: 'பொருள் சேர்', en: 'Add item' },
+  'design.offlineText': { ta: 'இணைப்பு இல்லை', en: 'Offline' },
+  'design.offlinePending': { ta: '{n} காத்திருக்கிறது', en: '{n} waiting' },
+  'design.confirmHint': { ta: 'சேமிப்பதற்கு முன் பொருட்களைச் சரிபார்க்கவும்', en: 'Check items before saving' },
+  'design.confirmSave': { ta: 'பில் சேமி', en: 'Save bill' },
+  'design.micLabel': { ta: 'பேசுங்கள்', en: 'Speak' },
+  'design.micHint': { ta: 'மைக்கை அழுத்திப் பேசுங்கள்', en: 'Press the mic and speak' },
+  'design.compareTa': { ta: 'தமிழ் மட்டும்', en: 'Tamil only' },
+  'design.compareEn': { ta: 'ஆங்கிலம் மட்டும்', en: 'English only' },
+  'design.tokensNote': { ta: 'மூலை 24 / 16 · மென்மையான நிழல் · அடிப்படை 16px', en: 'Radius 24 / 16 · soft shadow · 16px base' },
+  'design.type.sampleTitle': { ta: 'அரிசி 2 கிலோ', en: 'Rice 2 kg' },
+  'design.type.sampleBody': { ta: 'பேச்சில் பில் போடலாம்', en: 'Bill by voice' },
+  'design.type.sampleMuted': { ta: 'குறைந்த சரக்கு — வாங்க வேண்டும்', en: 'Low stock — buy more' },
+  'design.type.englishBody': { ta: 'பில் போடு — இணையம் இல்லாமலும் வேலை செய்யும்', en: 'Bill by voice — works offline' },
+  'design.navNote': { ta: 'தமிழ் + English லேபிள்கள், 48px+ டச்', en: 'Bilingual labels, 48px+ targets' },
 }
 
 const LANG_STORAGE_KEY = 'app.lang'
 
-function readStoredLang(): Lang {
+export const LANG_MODES: LangMode[] = ['ta', 'en', 'both']
+
+function readStoredMode(): LangMode {
   try {
-    return localStorage.getItem(LANG_STORAGE_KEY) === 'en' ? 'en' : 'ta'
+    const stored = localStorage.getItem(LANG_STORAGE_KEY)
+    if (stored === 'en' || stored === 'both') return stored
+    return 'ta'
   } catch {
     return 'ta'
   }
 }
 
-let lang: Lang = readStoredLang()
+let mode: LangMode = readStoredMode()
+const listeners = new Set<(m: LangMode) => void>()
 
-export function getLang(): Lang {
-  return lang
+export function getLangMode(): LangMode {
+  return mode
 }
 
-export function setLang(l: Lang): void {
-  lang = l
+export function setLangMode(m: LangMode): void {
+  mode = m
   try {
-    localStorage.setItem(LANG_STORAGE_KEY, l)
+    localStorage.setItem(LANG_STORAGE_KEY, m)
   } catch {
     // private browsing may block storage; language still applies for this session
   }
+  listeners.forEach((fn) => fn(m))
+}
+
+export function subscribeLangMode(fn: (m: LangMode) => void): () => void {
+  listeners.add(fn)
+  return () => {
+    listeners.delete(fn)
+  }
+}
+
+// language used for plain t() lookups: 'both' reads Tamil as the primary
+export function getLang(): Lang {
+  return mode === 'en' ? 'en' : 'ta'
+}
+
+export function setLang(l: Lang): void {
+  setLangMode(l)
+}
+
+/** Both languages for one key, for use with <T ta={...} en={...} />. */
+export function bi(key: StringKey): { ta: string; en: string } {
+  return strings[key]
+}
+
+function fill(s: string, vars: Record<string, string | number>): string {
+  let out = s
+  for (const [name, value] of Object.entries(vars)) {
+    out = out.replaceAll(`{${name}}`, String(value))
+  }
+  return out
+}
+
+/** Both languages with {placeholders} filled in, for use with <T />. */
+export function biVars(key: StringKey, vars: Record<string, string | number>): { ta: string; en: string } {
+  return { ta: fill(strings[key].ta, vars), en: fill(strings[key].en, vars) }
 }
 
 export function t(key: StringKey, vars?: Record<string, string | number>): string {
-  let s = strings[key][lang]
-  if (vars) {
-    for (const [name, value] of Object.entries(vars)) {
-      s = s.replaceAll(`{${name}}`, String(value))
-    }
-  }
-  return s
+  const s = strings[key][getLang()]
+  return vars ? fill(s, vars) : s
 }

@@ -14,3 +14,12 @@ export function rupeesFromPaise(paise: number): string {
 export function formatMoney(paise: number): string {
   return `₹${rupeesFromPaise(paise)}`
 }
+
+/** Postgres numeric comes back as a string ("83.99"); parse it into paise without float math. */
+export function paiseFromNumeric(input: string | number): number | null {
+  const text = typeof input === 'number' ? input.toFixed(2) : input.trim()
+  const m = /^(-?)(\d+)(?:\.(\d+))?$/.exec(text)
+  if (!m) return null
+  const paise = Number(m[2]) * 100 + Number((m[3] ?? '').padEnd(2, '0').slice(0, 2))
+  return m[1] === '-' ? -paise : paise
+}

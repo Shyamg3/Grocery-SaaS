@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import BottomNav from './components/BottomNav'
+import { Route, Routes } from 'react-router-dom'
+import BottomNav from './components/ui/BottomNav'
 import LoadingScreen from './components/LoadingScreen'
 import SyncBadge from './components/SyncBadge'
 import { enqueueTestBill } from './db/devTestBill'
@@ -8,6 +8,9 @@ import { initSync } from './db/sync'
 import { t } from './lib/i18n'
 import BillingPage from './pages/BillingPage'
 import CreateShopPage from './pages/CreateShopPage'
+import DesignSystemPage from './pages/DesignSystemPage'
+import HomePage from './pages/HomePage'
+import InvoicePage from './pages/InvoicePage'
 import LoginPage from './pages/LoginPage'
 import ProductsPage from './pages/ProductsPage'
 import ReportsPage from './pages/ReportsPage'
@@ -32,31 +35,36 @@ function ErrorScreen({ onRetry }: { onRetry: () => void }) {
 
 function AppShell() {
   const { shop } = useShop()
+  const shopId = shop?.id
 
   useEffect(() => {
-    if (!shop) return
-    initSync(shop.id)
+    if (!shopId) return
+    initSync(shopId)
     if (import.meta.env.DEV) {
       ;(window as unknown as { __enqueueTestBill?: () => Promise<string> }).__enqueueTestBill =
-        () => enqueueTestBill(shop.id)
+        () => enqueueTestBill(shopId)
     }
-  }, [shop?.id])
+  }, [shopId])
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-white">
-      <header className="border-b border-neutral-100">
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-page print:block print:min-h-0 print:bg-white">
+      <header className="border-b border-neutral-100 print:hidden">
         <SyncBadge />
       </header>
-      <main className="flex-1">
+      <main className="flex-1 print:block">
         <Routes>
-          <Route path="/" element={<Navigate to="/billing" replace />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/billing" element={<BillingPage />} />
+          <Route path="/bills" element={<BillingPage tab="history" />} />
+          <Route path="/bills/:id" element={<InvoicePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/stock" element={<StockPage />} />
           <Route path="/reports" element={<ReportsPage />} />
         </Routes>
       </main>
-      <BottomNav />
+      <div className="print:hidden">
+        <BottomNav />
+      </div>
     </div>
   )
 }
@@ -75,10 +83,18 @@ function AppGate() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ShopProvider>
-        <AppGate />
-      </ShopProvider>
-    </AuthProvider>
+    <Routes>
+      <Route path="/design" element={<DesignSystemPage />} />
+      <Route
+        path="*"
+        element={
+          <AuthProvider>
+            <ShopProvider>
+              <AppGate />
+            </ShopProvider>
+          </AuthProvider>
+        }
+      />
+    </Routes>
   )
 }
