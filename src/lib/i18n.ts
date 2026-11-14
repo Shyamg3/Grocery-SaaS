@@ -14,6 +14,7 @@ export type StringKey =
   | 'nav.stock'
   | 'stock.tabAdd'
   | 'stock.tabCorrect'
+  | 'stock.title'
   | 'stock.tabAll'
   | 'stock.tabLow'
   | 'stock.daysLeft'
@@ -70,6 +71,19 @@ export type StringKey =
   | 'stock.noteRequired'
   | 'stock.correctDone'
   | 'stock.saveCorrect'
+  | 'reports.title'
+  | 'reports.today'
+  | 'reports.thisWeek'
+  | 'reports.thisMonth'
+  | 'reports.listen'
+  | 'reports.listenAction'
+  | 'reports.totalSales'
+  | 'reports.billsCount'
+  | 'reports.stockCostSold'
+  | 'reports.grossProfit'
+  | 'reports.whenDidYouSell'
+  | 'reports.paymentsReceived'
+  | 'reports.vsYesterday'
   | 'nav.reports'
   | 'common.comingSoon'
   | 'common.loading'
@@ -215,6 +229,8 @@ export type StringKey =
   | 'home.lowStockHint'
   | 'home.lowStockCount'
   | 'home.lowStockNone'
+  | 'home.voiceFootnote'
+  | 'home.kuralKadai'
   | 'billing.heard'
   | 'billing.heardEmpty'
   | 'billing.heardSummary'
@@ -223,7 +239,6 @@ export type StringKey =
   | 'billing.emptyTitle'
   | 'billing.emptyBody'
   | 'billing.speakMore'
-  | 'billing.voiceSoon'
   | 'billing.hearBack'
   | 'billing.discount'
   | 'billing.addDiscount'
@@ -240,6 +255,7 @@ export type StringKey =
   | 'billing.customerSaveError'
   | 'billing.tabNew'
   | 'billing.tabHistory'
+  | 'billing.editHint'
   | 'billing.saveBill'
   | 'billing.savedToast'
   | 'billing.saveError'
@@ -249,6 +265,35 @@ export type StringKey =
   | 'billing.qtyInvalid'
   | 'billing.discountInvalid'
   | 'billing.backspace'
+  | 'billing.voice.title'
+  | 'billing.voice.hint'
+  | 'billing.voice.start'
+  | 'billing.voice.stop'
+  | 'billing.voice.listening'
+  | 'billing.voice.processing'
+  | 'billing.voice.offline'
+  | 'billing.voice.auth'
+  | 'billing.voice.forbidden'
+  | 'billing.voice.limit'
+  | 'billing.voice.audio'
+  | 'billing.voice.failed'
+  | 'billing.voice.nothingHeard'
+  | 'billing.voice.retry'
+  | 'billing.voice.micDenied'
+  | 'billing.voice.unsupported'
+  | 'billing.voice.draftTitle'
+  | 'billing.voice.pick'
+  | 'billing.voice.lowConfidence'
+  | 'billing.voice.otherItem'
+  | 'billing.voice.alternatives'
+  | 'billing.voice.teach'
+  | 'billing.voice.taught'
+  | 'billing.voice.teachFailed'
+  | 'billing.voice.teachOffline'
+  | 'billing.voice.addToBill'
+  | 'billing.voice.finalSaveError'
+  | 'billing.voice.confirmHint'
+  | 'billing.voice.noCatalog'
   | 'payment.cash'
   | 'payment.upi'
   | 'payment.card'
@@ -314,9 +359,23 @@ const strings: Record<StringKey, Record<Lang, string>> = {
   'nav.billing': { ta: 'பில்', en: 'Billing' },
   'nav.products': { ta: 'பொருட்கள்', en: 'Products' },
   'nav.stock': { ta: 'சரக்கு', en: 'Stock' },
+  'reports.title': { ta: 'வியாபார அறிக்கை', en: 'Business report' },
+  'reports.today': { ta: 'இன்று', en: 'Today' },
+  'reports.thisWeek': { ta: 'இந்த வாரம்', en: 'This week' },
+  'reports.thisMonth': { ta: 'இந்த மாதம்', en: 'This month' },
+  'reports.listen': { ta: 'அறிக்கையைக் கேளுங்கள்', en: 'Listen to report' },
+  'reports.listenAction': { ta: 'கேள்', en: 'Listen' },
+  'reports.totalSales': { ta: 'மொத்த விற்பனை', en: 'Total sales' },
+  'reports.billsCount': { ta: '{n} பில்கள்', en: '{n} bills' },
+  'reports.stockCostSold': { ta: 'விற்ற சரக்கு அடக்கம்', en: 'Stock cost sold' },
+  'reports.grossProfit': { ta: 'மொத்த லாபம்', en: 'Gross profit' },
+  'reports.whenDidYouSell': { ta: 'எப்போது அதிகம் விற்றது?', en: 'When did you sell?' },
+  'reports.paymentsReceived': { ta: 'பெறப்பட்ட பணம்', en: 'Payments received' },
+  'reports.vsYesterday': { ta: 'நேற்றை விட', en: 'vs yesterday' },
   'nav.reports': { ta: 'அறிக்கை', en: 'Reports' },
   'stock.tabAdd': { ta: 'சரக்கு சேர்', en: 'Add stock' },
   'stock.tabCorrect': { ta: 'திருத்தம்', en: 'Correct' },
+  'stock.title': { ta: 'சரக்கு இருப்பு', en: 'Your stock' },
   'stock.tabAll': { ta: 'அனைத்தும்', en: 'All stock' },
   'stock.tabLow': { ta: 'குறைவு', en: 'Low stock' },
   'stock.daysLeft': { ta: '{n} நாட்கள்', en: '{n} days' },
@@ -559,6 +618,8 @@ const strings: Record<StringKey, Record<Lang, string>> = {
   'home.lowStockHint': { ta: 'அடுத்து வாங்க வேண்டியவற்றைப் பார்', en: 'Check what to buy next' },
   'home.lowStockCount': { ta: '{n} பொருட்கள் குறைவாக உள்ளன', en: '{n} items running low' },
   'home.lowStockNone': { ta: 'சரக்கு நிலை நல்லா உள்ளது', en: 'Stock levels look fine' },
+  'home.voiceFootnote': { ta: 'தமிழில் அல்லது English-ல் பேசலாம்', en: 'Speak in Tamil or English' },
+  'home.kuralKadai': { ta: 'குரல் கடை', en: 'Kural kadai' },
   'billing.heard': { ta: 'நான் கேட்டது', en: 'I heard' },
   'billing.heardEmpty': { ta: 'இன்னும் ஒன்றும் இல்லை — கீழே தேடி அல்லது பேசி சேர்க்கவும்', en: 'Nothing yet — search below or speak to add' },
   'billing.heardSummary': { ta: '{n} பொருட்கள் இந்த பில்லில்', en: '{n} items in this bill' },
@@ -567,7 +628,6 @@ const strings: Record<StringKey, Record<Lang, string>> = {
   'billing.emptyTitle': { ta: 'புதிய பில்', en: 'New bill' },
   'billing.emptyBody': { ta: 'பொருளைத் தேடி அல்லது மைக்கில் பேசி சேர்க்கவும்', en: 'Search an item or use the mic to add' },
   'billing.speakMore': { ta: 'மேலும் சேர்க்க பேசுங்கள்', en: 'Speak to add more' },
-  'billing.voiceSoon': { ta: 'குரல் பில் அடுத்த படியில் இணைக்கப்படும்', en: 'Voice billing arrives in the next step' },
   'billing.hearBack': { ta: 'மீண்டும் கேட்க', en: 'Hear it back' },
   'billing.discount': { ta: 'தள்ளுபடி', en: 'Discount' },
   'billing.addDiscount': { ta: 'தள்ளுபடி சேர்', en: 'Add discount' },
@@ -584,6 +644,7 @@ const strings: Record<StringKey, Record<Lang, string>> = {
   'billing.customerSaveError': { ta: 'வாடிக்கையாளரை சேமிக்க முடியவில்லை', en: 'Could not save customer' },
   'billing.tabNew': { ta: 'புதிய பில்', en: 'New bill' },
   'billing.tabHistory': { ta: 'வரலாறு', en: 'History' },
+  'billing.editHint': { ta: 'எந்தப் பொருளையும் திருத்தலாம்', en: 'Edit any item' },
   'billing.saveBill': { ta: 'பில் சேமி', en: 'Save bill' },
   'billing.savedToast': { ta: 'பில் #{n} சேமிக்கப்பட்டது', en: 'Bill #{n} saved' },
   'billing.saveError': { ta: 'பில் சேமிக்க முடியவில்லை', en: 'Could not save bill' },
@@ -593,6 +654,35 @@ const strings: Record<StringKey, Record<Lang, string>> = {
   'billing.qtyInvalid': { ta: 'சரியான அளவை உள்ளிடவும்', en: 'Enter a valid quantity' },
   'billing.discountInvalid': { ta: 'சரியான தள்ளுபடியை உள்ளிடவும்', en: 'Enter a valid discount' },
   'billing.backspace': { ta: 'நீக்கு', en: 'Backspace' },
+  'billing.voice.title': { ta: 'குரலில் பில்', en: 'Bill by voice' },
+  'billing.voice.hint': { ta: 'மைக்கைத் தட்டி 15 வினாடி வரை பேசுங்கள்', en: 'Tap the mic and speak for up to 15 seconds' },
+  'billing.voice.start': { ta: 'பேசுங்கள்', en: 'Speak' },
+  'billing.voice.stop': { ta: 'நிறுத்து', en: 'Stop' },
+  'billing.voice.listening': { ta: 'கேட்கிறது… {s} வி', en: 'Listening… {s}s' },
+  'billing.voice.processing': { ta: 'பொருட்களைப் படிக்கிறது…', en: 'Reading items…' },
+  'billing.voice.offline': { ta: 'இணையம் இல்லை — கைமுறையாக பில் போடுங்கள்', en: 'No internet — you can still bill manually' },
+  'billing.voice.auth': { ta: 'மீண்டும் உள்நுழையவும்', en: 'Please sign in again' },
+  'billing.voice.forbidden': { ta: 'இந்தக் கடைக்கு அனுமதி இல்லை', en: 'No access to this shop' },
+  'billing.voice.limit': { ta: 'இன்றைய குரல் வரம்பு முடிந்தது — நாளை முயற்சிக்கவும்', en: "Today's voice limit is used up — try tomorrow" },
+  'billing.voice.audio': { ta: 'ஒலியைப் புரிந்து கொள்ள முடியவில்லை — மீண்டும் பேசுங்கள்', en: 'Could not read the audio — try again' },
+  'billing.voice.failed': { ta: 'குரல் சேவை தோல்வி — கைமுறையாக பில் போடுங்கள்', en: 'Voice service failed — bill manually' },
+  'billing.voice.nothingHeard': { ta: 'எந்தப் பொருளும் கேட்கவில்லை — மீண்டும் பேசுங்கள்', en: 'No items heard — try again' },
+  'billing.voice.retry': { ta: 'மீண்டும் பேசு', en: 'Try again' },
+  'billing.voice.micDenied': { ta: 'மைக் அனுமதி இல்லை — ஃபோன் அமைப்புகளில் அனுமதிக்கவும்', en: 'Microphone permission denied — allow it in phone settings' },
+  'billing.voice.unsupported': { ta: 'இந்த ஃபோனில் குரல் பதிவு இல்லை — கைமுறையாக போடுங்கள்', en: 'Voice recording is not supported on this phone — bill manually' },
+  'billing.voice.draftTitle': { ta: 'சரிபார்த்து சேர்க்கவும்', en: 'Check and add' },
+  'billing.voice.pick': { ta: 'பொருளைத் தேர்ந்தெடுக்கவும்', en: 'Pick the item' },
+  'billing.voice.lowConfidence': { ta: 'உறுதி குறைவு', en: 'Low confidence' },
+  'billing.voice.otherItem': { ta: 'வேறு பொருள்…', en: 'Other item…' },
+  'billing.voice.alternatives': { ta: 'மற்றவை', en: 'Alternatives' },
+  'billing.voice.teach': { ta: "'{word}' புதிய பெயராகச் சேமி", en: "Save '{word}' as another name" },
+  'billing.voice.taught': { ta: 'புதிய பெயர் சேமிக்கப்பட்டது', en: 'New name saved' },
+  'billing.voice.teachFailed': { ta: 'பெயரைச் சேமிக்க முடியவில்லை', en: 'Could not save the name' },
+  'billing.voice.teachOffline': { ta: 'பெயர் சேமிக்க இணையம் தேவை', en: 'Internet is needed to save the name' },
+  'billing.voice.addToBill': { ta: 'பில்லில் சேர்', en: 'Add to bill' },
+  'billing.voice.finalSaveError': { ta: 'திருத்தங்கள் சேமிக்கப்படவில்லை', en: 'Corrections were not saved' },
+  'billing.voice.confirmHint': { ta: 'ஒவ்வொரு பொருளையும் சரிபார்க்கவும்', en: 'Check every item first' },
+  'billing.voice.noCatalog': { ta: 'பொருட்கள் சேமிக்கப்படவில்லை — Products பக்கத்தை இணையத்தில் ஒருமுறை திறக்கவும்', en: 'No products cached — open Products once while online' },
   'payment.cash': { ta: 'பணம்', en: 'Cash' },
   'payment.upi': { ta: 'UPI', en: 'UPI' },
   'payment.card': { ta: 'கார்டு', en: 'Card' },

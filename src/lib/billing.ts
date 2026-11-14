@@ -81,6 +81,33 @@ export function addProductToLines(lines: CartLine[], product: CartProduct): Cart
   return next
 }
 
+export interface CartAddition {
+  product: CartProduct
+  qtyMilli: number
+}
+
+/** Merge confirmed voice items into the cart; repeated products add quantities. */
+export function mergeCartLines(lines: CartLine[], additions: CartAddition[]): CartLine[] {
+  const next = [...lines]
+  for (const { product, qtyMilli } of additions) {
+    if (qtyMilli <= 0) continue
+    const index = next.findIndex((line) => line.productId === product.id)
+    if (index === -1) {
+      next.push({
+        productId: product.id,
+        name: product.name,
+        nameTa: product.name_ta,
+        unit: product.unit,
+        unitPricePaise: product.sell_price,
+        qtyMilli,
+      })
+    } else {
+      next[index] = { ...next[index], qtyMilli: next[index].qtyMilli + qtyMilli }
+    }
+  }
+  return next
+}
+
 export function isSameLocalDay(iso: string, now: Date): boolean {
   const d = new Date(iso)
   return (

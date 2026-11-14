@@ -131,6 +131,36 @@ export async function saveProduct(
   if (error) throw new Error(error.message)
 }
 
+/** "Teach the app": append a spoken word as another name for a product. */
+export async function addProductAlias(
+  shopId: string,
+  productId: string,
+  spokenName: string,
+): Promise<void> {
+  const alias = spokenName.trim()
+  if (alias === '') return
+
+  const { data, error } = await supabase
+    .from('products')
+    .select('aliases')
+    .eq('id', productId)
+    .eq('shop_id', shopId)
+    .single()
+  if (error) throw new Error(error.message)
+
+  const existing = ((data as { aliases: string[] | null } | null)?.aliases ?? [])
+    .map((a) => a.trim())
+    .filter((a) => a !== '')
+  if (existing.some((a) => a.toLowerCase() === alias.toLowerCase())) return
+
+  const { error: updateError } = await supabase
+    .from('products')
+    .update({ aliases: [...existing, alias] })
+    .eq('id', productId)
+    .eq('shop_id', shopId)
+  if (updateError) throw new Error(updateError.message)
+}
+
 export async function softDeleteProduct(shopId: string, id: string): Promise<void> {
   const { error } = await supabase
     .from('products')

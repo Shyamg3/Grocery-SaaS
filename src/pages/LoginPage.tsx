@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import LanguageToggle from '../components/LanguageToggle'
+import LanguageToggle from '../components/ui/LanguageToggle'
 import { mapAuthError } from '../features/auth/AuthProvider'
 import { supabase } from '../lib/supabase'
 import { t, type StringKey } from '../lib/i18n'
@@ -43,7 +43,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-dvh flex-col bg-white">
       <div className="flex justify-end p-3">
-        <LanguageToggle onToggle={() => bump((n) => n + 1)} />
+        <LanguageToggle onChange={() => bump((n) => n + 1)} />
       </div>
       <div className="flex flex-1 flex-col justify-center px-6 pb-10">
         {checkEmail ? (

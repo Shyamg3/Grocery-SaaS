@@ -11,13 +11,34 @@ export default function LanguageToggle({
   value,
   onChange,
   className = '',
+  variant = 'default',
 }: {
   value?: LangMode
   onChange?: (mode: LangMode) => void
   className?: string
+  variant?: 'default' | 'headerPill'
 }) {
   const globalMode = useLangMode()
   const current = value ?? globalMode
+
+  if (variant === 'headerPill') {
+    return (
+      <button
+        type="button"
+        aria-label="Switch language / மொழி மாற்றம்"
+        onClick={() => {
+          const next: LangMode = current === 'ta' ? 'en' : 'ta'
+          setLangMode(next)
+          onChange?.(next)
+        }}
+        className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-1 text-sm font-medium shadow-xs transition-colors hover:bg-brand-tint active:scale-95 ${className}`}
+      >
+        <span className={current === 'ta' ? 'font-bold text-brand font-tamil' : 'text-ink-muted font-tamil'}>தமிழ்</span>
+        <span className="text-neutral-300">/</span>
+        <span className={current === 'en' ? 'font-bold text-brand' : 'text-ink-muted'}>EN</span>
+      </button>
+    )
+  }
 
   return (
     <div

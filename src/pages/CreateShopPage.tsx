@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import LanguageToggle from '../components/LanguageToggle'
+import LanguageToggle from '../components/ui/LanguageToggle'
 import { mapAuthError, useAuth } from '../features/auth/AuthProvider'
 import { useShop } from '../features/shop/ShopProvider'
 import { supabase } from '../lib/supabase'
@@ -46,7 +46,7 @@ export default function CreateShopPage() {
   return (
     <div className="flex min-h-dvh flex-col bg-white">
       <div className="flex items-center justify-between p-3">
-        <LanguageToggle onToggle={() => bump((n) => n + 1)} />
+        <LanguageToggle onChange={() => bump((n) => n + 1)} />
         <button
           type="button"
           onClick={handleSignOut}

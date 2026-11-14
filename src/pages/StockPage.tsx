@@ -1,8 +1,7 @@
 import { liveQuery } from 'dexie'
-import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NumberPad from '../components/billing/NumberPad'
-import ConfirmBar from '../components/ui/ConfirmBar'
 import EmptyState from '../components/ui/EmptyState'
 import PillTabs from '../components/ui/PillTabs'
 import T from '../components/ui/T'
@@ -56,27 +55,6 @@ interface PadState {
 
 function trimNumber(value: number): string {
   return String(Number(value.toFixed(3)))
-}
-
-function StockAction({
-  labelKey,
-  Icon,
-  onClick,
-}: {
-  labelKey: StringKey
-  Icon: ComponentType<{ className?: string }>
-  onClick: () => void
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-card border border-line bg-surface px-1 text-[13px] font-semibold text-ink active:bg-brand-tint"
-    >
-      <Icon className="h-6 w-6 text-brand" />
-      <span className="text-center leading-tight">{t(labelKey)}</span>
-    </button>
-  )
 }
 
 export default function StockPage() {
@@ -393,19 +371,25 @@ export default function StockPage() {
   const unitLabel = (unit: Unit) => t(`unit.${unit}`)
 
   return (
-    <div className="flex flex-col gap-3 p-4 pb-6">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-xl font-bold text-ink">{t('nav.stock')}</h1>
+    <div className="w-full px-4 py-4 md:px-6 md:py-6">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-ink font-tamil">
+            <T {...bi('stock.title')} />
+          </h1>
+          <p className="text-xs md:text-sm text-ink-muted">
+            {shop?.name}
+          </p>
+        </div>
         <button
           type="button"
           onClick={() => navigate('/products')}
-          className="min-h-[48px] rounded-control border border-line bg-surface px-4 text-base font-semibold text-ink active:bg-brand-tint"
+          className="min-h-[40px] rounded-full border border-line bg-surface px-4 text-xs font-semibold text-ink shadow-xs transition-colors hover:bg-brand-tint active:scale-95"
         >
           {t('stock.productsEntry')}
         </button>
       </div>
-
-      <PillTabs items={TABS} value={tab} onChange={(id) => setTab(id as Tab)} />
 
       {products.length === 0 ? (
         <EmptyState
@@ -416,7 +400,7 @@ export default function StockPage() {
           icon={<PlusIcon className="h-6 w-6" />}
         />
       ) : correctProduct ? (
-        <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4">
+        <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4 max-w-lg mx-auto shadow-card">
           <div>
             <h2 className="text-lg font-semibold text-ink">{correctProduct.name}</h2>
             {correctProduct.name_ta && <p className="text-sm text-ink-muted">{correctProduct.name_ta}</p>}
@@ -453,7 +437,7 @@ export default function StockPage() {
                 setCorrectNote(e.target.value)
                 setCorrectError(null)
               }}
-              className="min-h-[48px] rounded-control border border-line bg-page px-4 text-base text-ink"
+              className="min-h-[48px] rounded-control border border-line bg-page px-4 text-base text-ink focus:border-brand focus:outline-none"
             />
           </label>
 
@@ -467,7 +451,7 @@ export default function StockPage() {
             type="button"
             onClick={() => void handleSaveCorrection()}
             disabled={busy}
-            className="min-h-[56px] rounded-control bg-brand text-lg font-semibold text-white active:bg-brand-dark disabled:opacity-50"
+            className="min-h-[52px] rounded-control bg-brand text-base font-semibold text-white active:bg-brand-dark disabled:opacity-50"
           >
             {t('stock.saveCorrect')}
           </button>
@@ -479,180 +463,283 @@ export default function StockPage() {
               setCorrectNote('')
               setCorrectError(null)
             }}
-            className="min-h-[48px] rounded-control border border-line text-base font-semibold text-ink active:bg-brand-tint"
+            className="min-h-[44px] rounded-control border border-line text-sm font-semibold text-ink active:bg-brand-tint"
           >
             {t('common.cancel')}
           </button>
         </section>
       ) : (
-        <>
-          <div className="grid grid-cols-3 gap-2">
-            <StockAction labelKey="stock.scan" Icon={ScanIcon} onClick={() => setScanOpen(true)} />
-            <StockAction
-              labelKey="stock.addBySearch"
-              Icon={PlusIcon}
-              onClick={() => setSearchOpen(true)}
-            />
-            <StockAction
-              labelKey="stock.addByVoice"
-              Icon={MicIcon}
-              onClick={() => {
-                if (voiceSupported()) setVoiceOpen(true)
-                else showToast(t('stock.voiceUnsupported'), 'error')
-              }}
-            />
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          {/* Left Column: Hero Scan Card & Stock In Staging */}
+          <div className="md:col-span-5 space-y-4">
+            {/* Scan To Add Stock Hero Card (matching Figma Screen 03) */}
+            <div className="rounded-card bg-brand p-5 text-white shadow-raised">
+              <button
+                type="button"
+                onClick={() => setScanOpen(true)}
+                className="flex w-full items-start gap-4 text-left transition-transform active:scale-[0.99]"
+              >
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white/15 text-white">
+                  <ScanIcon className="h-7 w-7" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="block text-lg font-bold leading-snug">
+                    Scan to add stock
+                  </span>
+                  <span className="block text-sm font-medium text-white/90 font-tamil mt-0.5">
+                    ஸ்கேன் செய்து சேர்க்க
+                  </span>
+                  <span className="block text-xs text-white/70 mt-1">
+                    Scan barcode → confirm quantity
+                  </span>
+                </div>
+              </button>
+
+              <div className="mt-4 flex items-center gap-2 border-t border-white/15 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-white/15 px-3 py-2 text-xs font-semibold text-white hover:bg-white/25"
+                >
+                  <PlusIcon className="h-3.5 w-3.5" />
+                  <span>{t('stock.addBySearch')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (voiceSupported()) setVoiceOpen(true)
+                    else showToast(t('stock.voiceUnsupported'), 'error')
+                  }}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-white/15 px-3 py-2 text-xs font-semibold text-white hover:bg-white/25"
+                >
+                  <MicIcon className="h-3.5 w-3.5" />
+                  <span>{t('stock.addByVoice')}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Status Indicator */}
+            <div className="flex items-center gap-2 rounded-control bg-surface border border-line px-3.5 py-2.5 text-xs font-medium text-ink-muted shadow-xs">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
+              <span>✓ {products.length} products loaded</span>
+            </div>
+
+            {/* Staged Stock-In Lines */}
+            {lines.length > 0 && (
+              <section className="rounded-card border border-line bg-surface shadow-card">
+                <h2 className="border-b border-line px-4 py-2.5 text-xs font-bold text-ink-muted uppercase tracking-wider">
+                  {t('stock.linesTitle')} · {lines.length}
+                </h2>
+                <ul className="divide-y divide-line">
+                  {lines.map((line) => (
+                    <li key={line.productId} className="flex min-h-[56px] items-center gap-2 px-4 py-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const product = productById.get(line.productId)
+                          if (product) openQtyPad(product)
+                        }}
+                        aria-label={t('stock.editQty')}
+                        className="min-w-0 flex-1 py-1 text-left"
+                      >
+                        <span className="block truncate text-sm font-semibold text-ink">{line.name}</span>
+                        <span className="block text-xs leading-tight text-ink-muted">
+                          + {formatQty(line.qtyMilli)} {unitLabel(line.unit)}
+                          {line.costPricePaise !== null && ` · ${formatMoney(line.costPricePaise)}`}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openCostPad(line.productId)}
+                        aria-label={t('stock.costOptional')}
+                        className="min-h-[36px] shrink-0 rounded-full border border-line px-2.5 text-xs font-semibold text-ink active:bg-brand-tint"
+                      >
+                        ₹
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setLines((prev) => prev.filter((l) => l.productId !== line.productId))
+                        }
+                        aria-label={t('stock.removeLine')}
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div className="border-t border-line p-3">
+                  <input
+                    type="text"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder={t('stock.notePlaceholder')}
+                    className="min-h-[40px] w-full rounded-control border border-line bg-page px-3 text-sm text-ink mb-2 focus:border-brand focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void handleSaveStock()}
+                    disabled={busy}
+                    className="w-full min-h-[44px] rounded-control bg-brand text-sm font-semibold text-white shadow-xs hover:bg-brand-dark active:scale-[0.99] disabled:opacity-50"
+                  >
+                    {t('stock.save')} ({lines.length})
+                  </button>
+                </div>
+              </section>
+            )}
           </div>
 
-          {lines.length > 0 && (
-            <section className="rounded-card border border-line bg-surface">
-              <h2 className="border-b border-line px-3 py-2 text-sm font-semibold text-ink-muted">
-                {t('stock.linesTitle')} · {lines.length}
-              </h2>
-              <ul className="divide-y divide-line">
-                {lines.map((line) => (
-                  <li key={line.productId} className="flex min-h-[64px] items-center gap-1 px-3 py-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const product = productById.get(line.productId)
-                        if (product) openQtyPad(product)
-                      }}
-                      aria-label={t('stock.editQty')}
-                      className="min-w-0 flex-1 py-1 text-left"
-                    >
-                      <span className="block truncate font-semibold text-ink">{line.name}</span>
-                      <span className="block text-[13px] leading-tight text-ink-muted">
-                        + {formatQty(line.qtyMilli)} {unitLabel(line.unit)}
-                        {line.costPricePaise !== null && ` · ${formatMoney(line.costPricePaise)}`}
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openCostPad(line.productId)}
-                      aria-label={t('stock.costOptional')}
-                      className="min-h-[48px] shrink-0 rounded-control border border-line px-3 text-base font-semibold text-ink active:bg-brand-tint"
-                    >
-                      ₹
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setLines((prev) => prev.filter((l) => l.productId !== line.productId))
-                      }
-                      aria-label={t('stock.removeLine')}
-                      className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-danger active:bg-danger-soft"
-                    >
-                      <TrashIcon className="h-5 w-5" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <label className="flex flex-col gap-1 border-t border-line px-3 py-2 text-sm font-medium text-ink-muted">
-                {t('stock.note')}
-                <input
-                  type="text"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder={t('stock.notePlaceholder')}
-                  className="min-h-[48px] rounded-control border border-line bg-page px-4 text-base text-ink"
-                />
-              </label>
-            </section>
-          )}
+          {/* Right Column: Restock Recommendations & Product List */}
+          <div className="md:col-span-7 space-y-4">
+            {/* Tabs: All stock vs Low stock */}
+            <div className="flex items-center justify-between">
+              <PillTabs items={TABS} value={tab} onChange={(id) => setTab(id as Tab)} />
+              {suggestions.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => void handleMakeList()}
+                  disabled={buildingList}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-brand-dark active:scale-95 disabled:opacity-50"
+                >
+                  <span>{t('stock.makeList')}</span>
+                  <span>· {suggestions.length}</span>
+                </button>
+              )}
+            </div>
 
-          <button
-            type="button"
-            onClick={() => void handleMakeList()}
-            disabled={suggestions.length === 0 || buildingList}
-            className="min-h-[52px] w-full rounded-control border border-brand bg-surface px-4 text-base font-semibold text-brand active:bg-brand-tint disabled:opacity-50"
-          >
-            {t('stock.makeList')}
-            {suggestions.length > 0 ? ` · ${suggestions.length}` : ''}
-          </button>
+            {/* Restock Recommendations (matching Figma Screen 03) */}
+            {tab === 'low' && suggestions.length > 0 && (
+              <div className="space-y-2">
+                <div className="px-1">
+                  <h3 className="text-sm font-bold text-ink">Buy before you run out</h3>
+                  <p className="text-xs text-ink-muted">Based on your stock & average daily sales</p>
+                </div>
 
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('stock.search')}
-            className="min-h-[48px] w-full rounded-control border border-line bg-surface px-4 text-base text-ink"
-          />
+                <div className="space-y-2">
+                  {suggestions.map(({ product, qty }) => {
+                    const unit = unitLabel(product.unit)
+                    const insight = insightMap.get(product.id)
+                    const days = insight?.daysLeft ?? null
+                    const avg = insight && insight.avgDaily > 0 ? trimNumber(insight.avgDaily) : null
+                    return (
+                      <div
+                        key={product.id}
+                        className="flex items-center justify-between gap-3 rounded-card border border-line bg-surface p-3.5 shadow-card"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="font-semibold text-sm text-ink">{product.name}</span>
+                            {product.name_ta && (
+                              <span className="text-xs text-ink-muted font-tamil">· {product.name_ta}</span>
+                            )}
+                          </div>
+                          <div className="text-xs text-ink-muted mt-0.5">
+                            <span className="font-semibold text-amber-900">
+                              {trimNumber(product.stock_qty)} {unit} left
+                            </span>
+                            {days !== null && <span> · about {daysLeftLabel(days)}</span>}
+                          </div>
+                          {avg !== null && (
+                            <div className="text-[11px] text-ink-muted mt-0.5">
+                              {avg} {unit} / day
+                            </div>
+                          )}
+                        </div>
 
-          {visible.length === 0 ? (
-            <p className="rounded-card bg-surface p-4 text-sm text-ink-muted">
-              {tab === 'low' ? t('stock.lowNone') : t('products.noResults')}
-            </p>
-          ) : (
-            <ul className="divide-y divide-line rounded-card border border-line bg-surface">
-              {visible.map(({ product, insight }) => {
-                const unit = unitLabel(product.unit)
-                const buyQty = roundSuggestedQty(insight?.suggestedQty ?? 0, product.unit)
-                const days = insight?.daysLeft ?? null
-                const avg = insight && insight.avgDaily > 0 ? trimNumber(insight.avgDaily) : null
-                return (
-                  <li key={product.id} className="flex items-center gap-1 px-3 py-2">
-                    <button
-                      type="button"
-                      onClick={() => openQtyPad(product)}
-                      className="min-w-0 flex-1 py-1 text-left"
-                    >
-                      <span className="flex flex-wrap items-baseline gap-x-2">
-                        <span className="truncate font-semibold text-ink">{product.name}</span>
-                        {product.name_ta && (
-                          <span className="truncate text-[13px] text-ink-muted">{product.name_ta}</span>
-                        )}
-                      </span>
-                      <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[13px] leading-tight text-ink-muted">
-                        <span className="font-medium text-ink">
-                          {trimNumber(product.stock_qty)} {unit}
-                        </span>
-                        <span aria-hidden>·</span>
-                        {days === null ? (
-                          <span>{t('stock.noSales')}</span>
-                        ) : (
-                          <span>{t('stock.daysLeft', { n: daysLeftLabel(days) })}</span>
-                        )}
-                        {avg !== null && (
-                          <>
-                            <span aria-hidden>·</span>
-                            <span>{t('stock.avgPerDay', { n: avg })}</span>
-                          </>
-                        )}
-                      </span>
-                      {buyQty > 0 && (
-                        <span className="mt-1 inline-flex rounded-full bg-brand-soft px-2 py-0.5 text-[13px] font-semibold text-brand">
-                          {t('stock.buy', { qty: trimNumber(buyQty), unit })}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCorrectProductId(product.id)
-                        setCorrectQtyMilli(null)
-                        setCorrectNote('')
-                        setCorrectError(null)
-                      }}
-                      aria-label={t('stock.correctTitle')}
-                      className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-ink-muted active:bg-brand-tint"
-                    >
-                      <PencilIcon className="h-5 w-5" />
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
+                        <button
+                          type="button"
+                          onClick={() => openQtyPad(product)}
+                          className="shrink-0 rounded-full bg-[#fbf5e8] border border-[#f5dfb8] px-3.5 py-1.5 text-xs font-bold text-[#8a5a12] shadow-xs hover:bg-[#f5e8cf] active:scale-95"
+                        >
+                          Buy {trimNumber(qty)} {unit}
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
 
-          {lines.length > 0 && (
-            <ConfirmBar
-              floating
-              labelKey="stock.save"
-              onClick={() => void handleSaveStock()}
-              disabled={busy}
+            {/* Search Filter for Catalog */}
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('stock.search')}
+              className="min-h-[44px] w-full rounded-control border border-line bg-surface px-3.5 text-sm text-ink shadow-xs focus:border-brand focus:outline-none"
             />
-          )}
-        </>
+
+            {/* Product List */}
+            {visible.length === 0 ? (
+              <p className="rounded-card bg-surface p-6 text-center text-sm text-ink-muted border border-line">
+                {tab === 'low' ? t('stock.lowNone') : t('products.noResults')}
+              </p>
+            ) : (
+              <ul className="divide-y divide-line rounded-card border border-line bg-surface shadow-card overflow-hidden">
+                {visible.map(({ product, insight }) => {
+                  const unit = unitLabel(product.unit)
+                  const buyQty = roundSuggestedQty(insight?.suggestedQty ?? 0, product.unit)
+                  const days = insight?.daysLeft ?? null
+                  const avg = insight && insight.avgDaily > 0 ? trimNumber(insight.avgDaily) : null
+                  return (
+                    <li key={product.id} className="flex items-center gap-2 px-4 py-3 hover:bg-page transition-colors">
+                      <button
+                        type="button"
+                        onClick={() => openQtyPad(product)}
+                        className="min-w-0 flex-1 text-left"
+                      >
+                        <div className="flex flex-wrap items-baseline gap-x-2">
+                          <span className="truncate text-sm font-semibold text-ink">{product.name}</span>
+                          {product.name_ta && (
+                            <span className="truncate text-xs text-ink-muted font-tamil">{product.name_ta}</span>
+                          )}
+                        </div>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-ink-muted">
+                          <span className="font-semibold text-ink">
+                            {trimNumber(product.stock_qty)} {unit}
+                          </span>
+                          <span aria-hidden>·</span>
+                          {days === null ? (
+                            <span>{t('stock.noSales')}</span>
+                          ) : (
+                            <span className={days <= 3 ? 'font-semibold text-amber-800' : ''}>
+                              {t('stock.daysLeft', { n: daysLeftLabel(days) })}
+                            </span>
+                          )}
+                          {avg !== null && (
+                            <>
+                              <span aria-hidden>·</span>
+                              <span>{t('stock.avgPerDay', { n: avg })}</span>
+                            </>
+                          )}
+                        </div>
+                        {buyQty > 0 && (
+                          <span className="mt-1 inline-flex rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
+                            {t('stock.buy', { qty: trimNumber(buyQty), unit })}
+                          </span>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCorrectProductId(product.id)
+                          setCorrectQtyMilli(null)
+                          setCorrectNote('')
+                          setCorrectError(null)
+                        }}
+                        aria-label={t('stock.correctTitle')}
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-ink-muted hover:text-ink active:bg-brand-tint"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
       )}
 
       <SearchSheet

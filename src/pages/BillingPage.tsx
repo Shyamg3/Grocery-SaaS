@@ -11,15 +11,17 @@ import OfflineBadge from '../components/ui/OfflineBadge'
 import PillTabs from '../components/ui/PillTabs'
 import Toast from '../components/ui/Toast'
 import T from '../components/ui/T'
-import { BillIcon, MicIcon, PlusIcon, SpeakerIcon } from '../components/ui/icons'
+import { BillIcon, CheckIcon, MicIcon, PlusIcon, SpeakerIcon } from '../components/ui/icons'
 import { db, type CustomerCache, type PaymentMode, type ProductCache } from '../db/db'
 import { enqueueBill } from '../db/sync'
+import VoiceBillingSheet from '../features/voice/VoiceBillingSheet'
 import { useShop } from '../features/shop/ShopProvider'
 import {
   addProductToLines,
   clampDiscount,
   formatQty,
   lineTotalPaise,
+  mergeCartLines,
   parseQty,
   qtyFromMilli,
   subtotalPaise,
@@ -77,6 +79,8 @@ export default function BillingPage({ tab = 'new' }: { tab?: 'new' | 'history' }
   const [payment, setPayment] = useState<PaymentMode>('cash')
   const [customer, setCustomer] = useState<CustomerCache | null>(null)
   const [customerOpen, setCustomerOpen] = useState(false)
+  const [voiceOpen, setVoiceOpen] = useState(false)
+  const [spokenTranscript, setSpokenTranscript] = useState<string | null>(null)
   const [pad, setPad] = useState<PadTarget | null>(null)
   const [padValue, setPadValue] = useState('')
   const [padError, setPadError] = useState<string | null>(null)
@@ -300,13 +304,21 @@ export default function BillingPage({ tab = 'new' }: { tab?: 'new' | 'history' }
   }
 
   return (
-    <div className="min-h-dvh bg-page px-4 pt-4 pb-2">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-xl font-bold text-ink">{t('nav.bill')}</h1>
+    <div className="w-full px-4 py-4 md:px-6 md:py-6">
+      {/* Top Header */}
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-ink">
+            <T {...bi('billing.emptyTitle')} />
+          </h1>
+          <p className="text-xs text-ink-muted">
+            {shop?.name}
+          </p>
+        </div>
         <OfflineBadge online={online} pending={pending} />
       </div>
 
-      <div className="mt-3">
+      <div className="mb-4">
         <PillTabs
           items={BILL_TABS}
           value={view}
@@ -317,171 +329,188 @@ export default function BillingPage({ tab = 'new' }: { tab?: 'new' | 'history' }
       {view === 'history' ? (
         <BillsHistory onNewBill={() => navigate('/billing')} />
       ) : (
-        <>
-        <div className="mt-3 rounded-card border border-line bg-brand-tint p-4">
-          <div className="flex items-center justify-between gap-2">
-            <T className="text-[13px] font-semibold text-brand" {...bi('billing.heard')} />
-            {lines.length > 0 && (
-              <span className="text-[13px] tabular-nums text-ink-muted">
-                {t('billing.heardSummary', { n: lines.length })}
-              </span>
-            )}
-          </div>
-          <p className={`mt-1 line-clamp-2 text-base leading-snug ${lines.length > 0 ? 'text-ink' : 'text-ink-muted'}`}>
-            {lines.length > 0 ? transcript : t('billing.heardEmpty')}
-          </p>
-        </div>
-
-        <div className="mt-4">
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('products.searchPlaceholder')}
-            className="min-h-[52px] w-full rounded-control border border-line bg-surface px-4 text-base"
-          />
-          {products.length === 0 ? (
-            <p className="mt-2 rounded-control bg-warning-soft px-3 py-2 text-sm font-medium text-warning">
-              {t('billing.noCachedProducts')}
-            </p>
-          ) : visibleProducts.length === 0 ? (
-            <p className="mt-3 text-center text-sm text-ink-muted">{t('products.noResults')}</p>
-          ) : (
-            <>
-              <div className="mt-2 px-1">
-                <T className="text-[13px] text-ink-muted" {...bi('billing.tapToAdd')} />
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          {/* Catalog & Search (Desktop: Left 5 columns; Mobile: below voice/items or inline) */}
+          <div className="order-2 md:order-1 md:col-span-5 space-y-3">
+            <div className="rounded-card border border-line bg-surface p-4 shadow-card">
+              <div className="mb-2">
+                <T className="text-sm font-semibold text-ink" {...bi('billing.tapToAdd')} />
               </div>
-              <ul className="mt-1 overflow-hidden rounded-card border border-line bg-surface">
-                {visibleProducts.map((product) => (
-                  <li key={product.id}>
-                    <button
-                      type="button"
-                      onClick={() => addProduct(product)}
-                      className="flex min-h-[64px] w-full items-center gap-3 border-b border-line px-3 py-2 text-left last:border-b-0 active:bg-brand-tint"
-                    >
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate">
-                          <T
-                            className="text-base font-semibold"
-                            ta={product.name_ta ?? product.name}
-                            en={product.name}
-                          />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t('products.searchPlaceholder')}
+                className="min-h-[48px] w-full rounded-control border border-line bg-page px-3.5 text-base focus:border-brand focus:outline-none"
+              />
+
+              {products.length === 0 ? (
+                <p className="mt-3 rounded-control bg-warning-soft px-3 py-2 text-sm font-medium text-warning">
+                  {t('billing.noCachedProducts')}
+                </p>
+              ) : visibleProducts.length === 0 ? (
+                <p className="mt-4 text-center text-sm text-ink-muted">{t('products.noResults')}</p>
+              ) : (
+                <ul className="mt-3 max-h-[360px] md:max-h-[520px] overflow-y-auto divide-y divide-line rounded-control border border-line">
+                  {visibleProducts.map((product) => (
+                    <li key={product.id}>
+                      <button
+                        type="button"
+                        onClick={() => addProduct(product)}
+                        className="flex min-h-[56px] w-full items-center justify-between gap-3 px-3 py-2 text-left transition-colors hover:bg-brand-tint active:bg-brand-soft"
+                      >
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-ink">
+                            <T ta={product.name_ta ?? product.name} en={product.name} />
+                          </span>
+                          <span className="block text-xs text-ink-muted">
+                            {formatMoney(product.sell_price)} / {t(UNIT_KEYS[product.unit])} · {product.stock_qty}{' '}
+                            {t(UNIT_KEYS[product.unit])}
+                          </span>
                         </span>
-                        <span className="block text-[13px] text-ink-muted">
-                          {formatMoney(product.sell_price)} / {t(UNIT_KEYS[product.unit])} · {product.stock_qty}{' '}
-                          {t(UNIT_KEYS[product.unit])}
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-soft text-brand">
+                          <PlusIcon className="h-4 w-4" />
                         </span>
-                      </span>
-                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-soft text-brand">
-                        <PlusIcon className="h-5 w-5" />
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-
-        <div className="mt-4">
-          {lines.length === 0 ? (
-            <EmptyState
-              titleKey="billing.emptyTitle"
-              bodyKey="billing.emptyBody"
-              icon={<BillIcon className="h-6 w-6" />}
-            />
-          ) : (
-            <div className="rounded-card border border-line bg-surface px-4">
-              {lines.map((line) => (
-                <ListRow
-                  key={line.productId}
-                  title={
-                    <span className="block truncate">
-                      <T className="text-base font-semibold" ta={line.nameTa ?? line.name} en={line.name} />
-                    </span>
-                  }
-                  subtitle={
-                    <span>
-                      {formatQty(line.qtyMilli)} {t(UNIT_KEYS[line.unit])} × {formatMoney(line.unitPricePaise)}
-                    </span>
-                  }
-                  value={formatMoney(lineTotalPaise(line.unitPricePaise, line.qtyMilli))}
-                  onEdit={() => openQty(line)}
-                  onRemove={() => setLines((prev) => prev.filter((l) => l.productId !== line.productId))}
-                  removeLabel={t('billing.removeLine')}
-                />
-              ))}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => showToast(t('billing.voiceSoon'))}
-          className="mt-3 flex min-h-[56px] w-full items-center justify-center gap-2 rounded-control border border-brand bg-surface text-base font-semibold text-brand active:bg-brand-tint"
-        >
-          <MicIcon className="h-5 w-5" />
-          <T {...bi('billing.speakMore')} />
-        </button>
-
-        {lines.length > 0 && taVoice && (
-          <button
-            type="button"
-            onClick={hearBack}
-            className="mt-2 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-control text-ink-muted active:bg-brand-tint"
-          >
-            <SpeakerIcon className="h-5 w-5" />
-            <T className="text-[13px]" {...bi('billing.hearBack')} />
-          </button>
-        )}
-
-        <div className="mt-3 space-y-3 rounded-card border border-line bg-surface p-3">
-          <button
-            type="button"
-            onClick={openDiscount}
-            className="flex min-h-[52px] w-full items-center justify-between gap-3 rounded-control bg-page px-3 text-left active:bg-brand-tint"
-          >
-            <T className="text-base font-medium" {...bi('billing.discount')} />
-            <span className={`text-base font-semibold tabular-nums ${discount > 0 ? 'text-danger' : 'text-brand'}`}>
-              {discount > 0 ? `− ${formatMoney(discount)}` : t('billing.addDiscount')}
-            </span>
-          </button>
-
-          <div>
-            <div className="mb-1 px-1">
-              <T className="text-[13px] font-medium text-ink-muted" {...bi('billing.payment')} />
-            </div>
-            <PillTabs items={PAYMENT_ITEMS} value={payment} onChange={changePayment} />
           </div>
 
-          {payment === 'credit' && (
+          {/* Current Bill, Items, Payment, Checkout (Desktop: Right 7 columns; Mobile: Order 1) */}
+          <div className="order-1 md:order-2 md:col-span-7 space-y-4">
+            {/* Voice Transcription Bubble (matching Figma Screen 02) */}
+            <div className="rounded-card border border-brand-soft bg-brand-tint p-4 shadow-xs">
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-brand">
+                  <CheckIcon className="h-4 w-4" />
+                  <T {...bi('billing.heard')} />
+                </span>
+                {lines.length > 0 && (
+                  <span className="text-xs font-medium tabular-nums text-ink-muted">
+                    {t('billing.heardSummary', { n: lines.length })}
+                  </span>
+                )}
+              </div>
+              <p className={`mt-2 text-base font-semibold leading-snug ${lines.length > 0 ? 'text-ink' : 'text-ink-muted'}`}>
+                {spokenTranscript ? `“${spokenTranscript}”` : lines.length > 0 ? transcript : t('billing.heardEmpty')}
+              </p>
+              {lines.length > 0 && taVoice && (
+                <button
+                  type="button"
+                  onClick={hearBack}
+                  className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-medium text-brand hover:underline"
+                >
+                  <SpeakerIcon className="h-4 w-4" />
+                  <T {...bi('billing.hearBack')} />
+                </button>
+              )}
+            </div>
+
+            {/* Bill Items List */}
+            <div>
+              {lines.length === 0 ? (
+                <EmptyState
+                  titleKey="billing.emptyTitle"
+                  bodyKey="billing.emptyBody"
+                  icon={<BillIcon className="h-6 w-6" />}
+                />
+              ) : (
+                <div className="rounded-card border border-line bg-surface px-4 shadow-card">
+                  <div className="flex items-center justify-between border-b border-line py-3">
+                    <span className="text-sm font-bold text-ink">
+                      {t('billing.heardSummary', { n: lines.length })}
+                    </span>
+                    <span className="text-xs text-ink-muted">
+                      <T {...bi('billing.editHint')} />
+                    </span>
+                  </div>
+                  {lines.map((line) => (
+                    <ListRow
+                      key={line.productId}
+                      title={
+                        <span className="block truncate text-base font-semibold text-ink">
+                          <T ta={line.nameTa ?? line.name} en={line.name} />
+                        </span>
+                      }
+                      subtitle={
+                        <span className="text-xs text-ink-muted">
+                          {formatQty(line.qtyMilli)} {t(UNIT_KEYS[line.unit])} × {formatMoney(line.unitPricePaise)}
+                        </span>
+                      }
+                      value={formatMoney(lineTotalPaise(line.unitPricePaise, line.qtyMilli))}
+                      onEdit={() => openQty(line)}
+                      onRemove={() => setLines((prev) => prev.filter((l) => l.productId !== line.productId))}
+                      removeLabel={t('billing.removeLine')}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Speak To Add More CTA Button (Figma Screen 02) */}
             <button
               type="button"
-              onClick={() => setCustomerOpen(true)}
-              className="flex min-h-[52px] w-full items-center justify-between gap-3 rounded-control border border-line px-3 text-left active:bg-brand-tint"
+              onClick={() => setVoiceOpen(true)}
+              className="flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-control border border-brand bg-surface text-base font-semibold text-brand shadow-xs transition-colors hover:bg-brand-tint active:bg-brand-soft"
             >
-              <T className="text-base font-medium" {...bi('billing.customerTitle')} />
-              <span className={`min-w-0 truncate text-base font-semibold ${customer ? 'text-ink' : 'text-brand'}`}>
-                {customer ? customer.name : t('billing.chooseCustomer')}
-              </span>
+              <MicIcon className="h-5 w-5" />
+              <T {...bi('billing.speakMore')} />
             </button>
-          )}
-          {creditBlocked && (
-            <p className="rounded-control bg-warning-soft px-3 py-2 text-sm font-medium text-warning">
-              {t('billing.creditNeedsCustomer')}
-            </p>
-          )}
-        </div>
 
-        <ConfirmBar
-          floating
-          labelKey="billing.saveBill"
-          value={formatMoney(total)}
-          valueLabel={t('billing.total')}
-          onClick={() => void handleSave()}
-          disabled={lines.length === 0 || saving || creditBlocked}
-        />
-        </>
+            {/* Discount & Payment Controls */}
+            <div className="space-y-3 rounded-card border border-line bg-surface p-4 shadow-card">
+              <button
+                type="button"
+                onClick={openDiscount}
+                className="flex min-h-[48px] w-full items-center justify-between gap-3 rounded-control bg-page px-3.5 text-left transition-colors hover:bg-brand-tint active:bg-brand-soft"
+              >
+                <T className="text-sm font-medium text-ink" {...bi('billing.discount')} />
+                <span className={`text-sm font-semibold tabular-nums ${discount > 0 ? 'text-danger' : 'text-brand'}`}>
+                  {discount > 0 ? `− ${formatMoney(discount)}` : t('billing.addDiscount')}
+                </span>
+              </button>
+
+              <div>
+                <div className="mb-1.5 px-1">
+                  <T className="text-xs font-medium text-ink-muted" {...bi('billing.payment')} />
+                </div>
+                <PillTabs items={PAYMENT_ITEMS} value={payment} onChange={changePayment} />
+              </div>
+
+              {payment === 'credit' && (
+                <button
+                  type="button"
+                  onClick={() => setCustomerOpen(true)}
+                  className="flex min-h-[48px] w-full items-center justify-between gap-3 rounded-control border border-line px-3.5 text-left active:bg-brand-tint"
+                >
+                  <T className="text-sm font-medium" {...bi('billing.customerTitle')} />
+                  <span className={`min-w-0 truncate text-sm font-semibold ${customer ? 'text-ink' : 'text-brand'}`}>
+                    {customer ? customer.name : t('billing.chooseCustomer')}
+                  </span>
+                </button>
+              )}
+              {creditBlocked && (
+                <p className="rounded-control bg-warning-soft px-3 py-2 text-xs font-medium text-warning">
+                  {t('billing.creditNeedsCustomer')}
+                </p>
+              )}
+            </div>
+
+            {/* Confirm & Save Button */}
+            <ConfirmBar
+              floating
+              labelKey="billing.saveBill"
+              hintKey="billing.voice.confirmHint"
+              onClick={handleSave}
+              disabled={lines.length === 0 || saving || creditBlocked}
+              value={formatMoney(total)}
+              valueLabel={`${bi('billing.total').ta} / ${bi('billing.total').en}`}
+            />
+          </div>
+        </div>
       )}
 
       <NumberPad
@@ -515,6 +544,21 @@ export default function BillingPage({ tab = 'new' }: { tab?: 'new' | 'history' }
             showToast(t('billing.customerAdded'))
           }}
           onClose={() => setCustomerOpen(false)}
+        />
+      )}
+
+      {shopId && (
+        <VoiceBillingSheet
+          open={voiceOpen}
+          shopId={shopId}
+          products={products}
+          online={online}
+          onAdd={(items, transcriptText) => {
+            setLines((prev) => mergeCartLines(prev, items))
+            if (transcriptText) setSpokenTranscript(transcriptText)
+          }}
+          onClose={() => setVoiceOpen(false)}
+          onToast={showToast}
         />
       )}
 
